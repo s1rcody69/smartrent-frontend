@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute'
 import Landing from '../pages/public/Landing'
+import About from '../pages/public/About'
+import PropertiesPage from '../pages/public/PropertiesPage'
 import AuthPage from '../pages/auth/AuthPage'
 import LandlordDashboard from '../pages/landlord/LandlordDashboard'
 import TenantDashboard from '../pages/tenant/TenantDashboard'
@@ -10,6 +12,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/properties" element={<PropertiesPage />} />
       <Route path="/login" element={<AuthPage />} />
       <Route path="/register" element={<AuthPage />} />
       <Route path="/landlord/*" element={
