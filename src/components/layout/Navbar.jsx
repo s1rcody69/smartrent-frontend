@@ -1,22 +1,21 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { clearCredentials } from '../../features/auth/authSlice'
 import { useLogoutMutation } from '../../features/auth/authApi'
 import { useState } from 'react'
 
-function Navbar() {
+function Navbar({ transparent = false }) {
   const { user, refreshToken } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const location = useLocation()
   const [logout] = useLogoutMutation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const handleLogout = async () => {
-    try {
-      if (refreshToken) await logout(refreshToken).unwrap()
-    } catch (e) {}
+    try { if (refreshToken) await logout(refreshToken).unwrap() } catch (e) {}
     dispatch(clearCredentials())
-    navigate('/')
+    setDropdownOpen(false)
   }
 
   const dashboardPath = user?.role === 'landlord'
@@ -25,85 +24,129 @@ function Navbar() {
     ? '/tenant/dashboard'
     : '/admin/dashboard'
 
+  const navLinks = [
+    { to: '/', label: 'Home' },
+    { to: '/properties', label: 'Properties' },
+    { to: '/about', label: 'About Us' },
+    ...(user ? [{ to: dashboardPath, label: 'Dashboard' }] : []),
+  ]
+
+  const isActive = (path) => location.pathname === path
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      transparent
+        ? 'bg-transparent'
+        : 'bg-slate-900/95 backdrop-blur-md border-b border-white/5'
+    }`}>
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform">
+            <span className="text-white font-black text-base">S</span>
           </div>
-          <span className="text-white font-bold text-lg tracking-tight">SmartRent</span>
+          <span className="text-white font-bold text-xl tracking-tight">SmartRent</span>
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
-          <Link to="/" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">
-            Home
-          </Link>
-          <Link to="/properties" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">
-            Properties
-          </Link>
-          <Link to="/about" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">
-            About Us
-          </Link>
-          {user && (
-            <Link to={dashboardPath} className="text-slate-400 hover:text-white text-sm font-medium transition-colors">
-              Dashboard
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                isActive(to)
+                  ? 'text-white bg-white/10'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {label}
             </Link>
-          )}
+          ))}
         </div>
 
-        {/* Auth actions */}
+        {/* Right side */}
         <div className="hidden md:flex items-center gap-3">
           {!user ? (
-            <Link
-              to="/login"
-              className="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors"
-            >
-              Log in
-            </Link>
-          ) : (
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-white text-sm font-medium leading-none">{user.full_name}</p>
-                <p className="text-amber-500 text-xs mt-0.5 capitalize">{user.role}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="border border-slate-700 hover:border-slate-500 text-slate-400 hover:text-white px-4 py-2 rounded-full text-sm font-medium transition-colors"
+            <>
+              <Link to="/login" className="text-white/70 hover:text-white text-sm font-medium px-4 py-2 transition-colors">
+                Log in
+              </Link>
+              <Link
+                to="/register"
+                className="bg-amber-500 hover:bg-amber-400 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:-translate-y-0.5"
               >
-                Log out
+                Get started
+              </Link>
+            </>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-3 bg-white/10 hover:bg-white/15 rounded-xl px-4 py-2.5 transition-colors"
+              >
+                <div className="w-7 h-7 rounded-lg bg-amber-500 flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">{user.first_name?.[0]}</span>
+                </div>
+                <div className="text-left">
+                  <p className="text-white text-xs font-semibold leading-none">{user.first_name}</p>
+                  <p className="text-amber-400 text-xs mt-0.5 capitalize">{user.role}</p>
+                </div>
+                <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-slate-800 rounded-xl border border-white/10 shadow-2xl overflow-hidden">
+                  <Link to={dashboardPath} onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors">
+                    <span>Dashboard</span>
+                  </Link>
+                  <div className="border-t border-white/10" />
+                  <button onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors">
+                    <span>Log out</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden text-slate-400 hover:text-white"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
+        {/* Mobile toggle */}
+        <button className="md:hidden text-white p-2" onClick={() => setMenuOpen(!menuOpen)}>
           <div className="space-y-1.5">
-            <span className="block w-6 h-0.5 bg-current"></span>
-            <span className="block w-6 h-0.5 bg-current"></span>
-            <span className="block w-6 h-0.5 bg-current"></span>
+            <span className={`block w-6 h-0.5 bg-current transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+            <span className={`block w-6 h-0.5 bg-current transition-all ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-6 h-0.5 bg-current transition-all ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
           </div>
         </button>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-slate-900 border-t border-slate-800 px-6 py-4 space-y-3">
-          <Link to="/" className="block text-slate-400 hover:text-white text-sm py-1" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link to="/properties" className="block text-slate-400 hover:text-white text-sm py-1" onClick={() => setMenuOpen(false)}>Properties</Link>
-          <Link to="/about" className="block text-slate-400 hover:text-white text-sm py-1" onClick={() => setMenuOpen(false)}>About Us</Link>
-          {user && <Link to={dashboardPath} className="block text-slate-400 hover:text-white text-sm py-1" onClick={() => setMenuOpen(false)}>Dashboard</Link>}
-          {!user
-            ? <Link to="/login" className="block text-amber-500 text-sm py-1 font-medium" onClick={() => setMenuOpen(false)}>Log in</Link>
-            : <button onClick={handleLogout} className="block text-slate-400 text-sm py-1">Log out</button>
-          }
+        <div className="md:hidden bg-slate-900/98 backdrop-blur-md border-t border-white/5 px-6 py-4 space-y-1">
+          {navLinks.map(({ to, label }) => (
+            <Link key={to} to={to} onClick={() => setMenuOpen(false)}
+              className="block px-4 py-3 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
+              {label}
+            </Link>
+          ))}
+          <div className="pt-3 border-t border-white/10 mt-3">
+            {!user ? (
+              <Link to="/login" onClick={() => setMenuOpen(false)}
+                className="block w-full text-center bg-amber-500 text-white px-4 py-3 rounded-xl text-sm font-semibold">
+                Log in
+              </Link>
+            ) : (
+              <button onClick={handleLogout}
+                className="block w-full text-center text-red-400 text-sm py-2">
+                Log out
+              </button>
+            )}
+          </div>
         </div>
       )}
     </nav>
