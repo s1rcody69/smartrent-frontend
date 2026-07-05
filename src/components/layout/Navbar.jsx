@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { clearCredentials } from '../../features/auth/authSlice'
 import { useLogoutMutation } from '../../features/auth/authApi'
 import { useState } from 'react'
+import { SmartRentInline } from './SmartRentLogo' // Imported the logo component
 
 function Navbar({ transparent = false }) {
   const { user, refreshToken } = useSelector((state) => state.auth)
@@ -41,12 +42,9 @@ function Navbar({ transparent = false }) {
     }`}>
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform">
-            <span className="text-white font-black text-base">S</span>
-          </div>
-          <span className="text-white font-bold text-xl tracking-tight">SmartRent</span>
+        {/* Logo — Replaced old text/avatar block with modern vector element */}
+        <Link to="/" className="flex items-center group hover:opacity-95 transition-opacity">
+          <SmartRentInline size={45} theme="dark" />
         </Link>
 
         {/* Desktop links */}
@@ -86,7 +84,7 @@ function Navbar({ transparent = false }) {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-3 bg-white/10 hover:bg-white/15 rounded-xl px-4 py-2.5 transition-colors"
               >
-                <div className="w-7 h-7 rounded-lg bg-amber-500 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
                   <span className="text-white font-bold text-xs">{user.first_name?.[0]}</span>
                 </div>
                 <div className="text-left">

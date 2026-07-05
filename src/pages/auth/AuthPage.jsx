@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useLoginMutation, useRegisterMutation } from '../../features/auth/authApi'
 import { setCredentials } from '../../features/auth/authSlice'
+import { SmartRentInline } from '../../components/layout/SmartRentLogo' // Adjust this import path as necessary based on your folder structure
 import toast from 'react-hot-toast'
 import { Building2, Home, ArrowLeft, Eye, EyeOff, Phone, Mail, User, Lock } from 'lucide-react'
 
@@ -103,11 +104,8 @@ function AuthPage() {
 
         {/* Top bar */}
         <div className="px-8 py-6 flex items-center justify-between border-b border-slate-100">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center shadow-md shadow-amber-500/30 group-hover:scale-105 transition-transform">
-              <span className="text-white font-black text-sm">S</span>
-            </div>
-            <span className="font-bold text-slate-900 text-lg">SmartRent</span>
+          <Link to="/" className="flex items-center">
+            <SmartRentInline size={28} theme="light" />
           </Link>
           <Link to="/" className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors">
             <ArrowLeft size={15} />

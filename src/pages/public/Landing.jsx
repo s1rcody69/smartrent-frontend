@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Navbar from '../../components/layout/Navbar'
 import { useGetPropertiesQuery } from '../../features/properties/propertiesApi'
+import { SmartRentInline } from '../../components/layout/SmartRentLogo'
 import { 
   Building2, 
   Smile, 
@@ -305,11 +306,8 @@ function Landing() {
 
             {/* Brand */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
-                  <span className="text-white font-black text-base">S</span>
-                </div>
-                <span className="text-white font-bold text-xl">SmartRent</span>
+              <div className="mb-4">
+                <SmartRentInline size={32} theme="dark" />
               </div>
               <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
                 A modern property management platform built specifically for landlords and tenants in Kenya. Powered by M-Pesa.

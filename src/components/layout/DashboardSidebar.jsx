@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { clearCredentials } from '../../features/auth/authSlice'
 import { useLogoutMutation } from '../../features/auth/authApi'
+import { SmartRentInline } from './SmartRentLogo' // Adjust this import path as necessary based on your folder structure
 import {
   LayoutDashboard, Building2, FileText, Wrench,
   CreditCard, LogOut, ChevronRight, User
@@ -28,11 +29,8 @@ function DashboardSidebar({ links }) {
 
       {/* Logo */}
       <div className="px-5 py-5 border-b border-white/5">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform">
-            <span className="text-white font-black text-sm">S</span>
-          </div>
-          <span className="text-white font-bold text-base">SmartRent</span>
+        <Link to="/" className="flex items-center group">
+          <SmartRentInline size={28} theme="dark" />
         </Link>
       </div>
 

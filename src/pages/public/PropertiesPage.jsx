@@ -1,6 +1,8 @@
 import Navbar from '../../components/layout/Navbar'
 import { useGetPropertiesQuery } from '../../features/properties/propertiesApi'
 import { Link } from 'react-router-dom'
+import { SmartRentInline } from '../../components/layout/SmartRentLogo'
+import { MapPin, Mail, Smartphone } from 'lucide-react'
 
 function PropertiesPage() {
   const { data, isLoading } = useGetPropertiesQuery()
@@ -67,6 +69,55 @@ function PropertiesPage() {
           )}
         </div>
       </div>
+
+      {/* ── FOOTER ──────────────────────────────────── */}
+      <footer className="bg-slate-950 py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/5">
+
+            {/* Brand */}
+            <div className="md:col-span-2">
+              <div className="mb-4">
+                <SmartRentInline size={32} theme="dark" />
+              </div>
+              <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
+                A modern property management platform built specifically for landlords and tenants in Kenya. Powered by M-Pesa.
+              </p>
+            </div>
+
+            {/* Quick links */}
+            <div>
+              <p className="text-white font-semibold text-sm mb-4">Platform</p>
+              <div className="space-y-3">
+                {[['/', 'Home'], ['/properties', 'Properties'], ['/about', 'About Us'], ['/login', 'Log in']].map(([to, label]) => (
+                  <Link key={to} to={to} className="block text-slate-500 hover:text-slate-300 text-sm transition-colors">{label}</Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <p className="text-white font-semibold text-sm mb-4">Contact</p>
+              <div className="space-y-3 text-sm text-slate-500">
+                <p className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 shrink-0 text-slate-500" /> Nairobi, Kenya
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <Mail className="w-4 h-4 shrink-0 text-slate-500" /> hello@smartrent.co.ke
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <Smartphone className="w-4 h-4 shrink-0 text-slate-500" /> M-Pesa integrated
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-slate-600 text-sm">© 2026 SmartRent. All rights reserved.</p>
+            <p className="text-slate-600 text-sm">Built for Kenya </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
