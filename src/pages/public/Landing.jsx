@@ -138,10 +138,7 @@ function Landing() {
         {/* Hero content */}
         <div className="relative max-w-7xl mx-auto px-6 pb-28 w-full">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6">
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <span className="text-amber-300 text-xs font-semibold tracking-widest uppercase">Built for Kenya</span>
-            </div>
+          
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6">
               Elevating{' '}
