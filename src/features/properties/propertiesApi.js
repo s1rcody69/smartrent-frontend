@@ -12,21 +12,43 @@ export const propertiesApi = apiSlice.injectEndpoints({
     }),
     createProperty: builder.mutation({
       query: (data) => {
-        const formData = new FormData()
-        Object.entries(data).forEach(([k, v]) => {
-          if (v !== null && v !== undefined) formData.append(k, v)
-        })
-        return { url: 'properties/', method: 'POST', body: formData }
+        // Only use FormData if cover_image is a real File upload
+        if (data.cover_image instanceof File) {
+          const formData = new FormData()
+          Object.entries(data).forEach(([k, v]) => {
+            if (v !== null && v !== undefined) formData.append(k, v)
+          })
+          return { url: 'properties/', method: 'POST', body: formData }
+        }
+        // Otherwise send as JSON — cover_image is a URL string or absent
+        const payload = { ...data }
+        if (!payload.cover_image) delete payload.cover_image
+        return {
+          url: 'properties/',
+          method: 'POST',
+          body: payload,
+          headers: { 'Content-Type': 'application/json' },
+        }
       },
       invalidatesTags: ['Property'],
     }),
     updateProperty: builder.mutation({
       query: ({ id, ...data }) => {
-        const formData = new FormData()
-        Object.entries(data).forEach(([k, v]) => {
-          if (v !== null && v !== undefined) formData.append(k, v)
-        })
-        return { url: `properties/${id}/`, method: 'PATCH', body: formData }
+        if (data.cover_image instanceof File) {
+          const formData = new FormData()
+          Object.entries(data).forEach(([k, v]) => {
+            if (v !== null && v !== undefined) formData.append(k, v)
+          })
+          return { url: `properties/${id}/`, method: 'PATCH', body: formData }
+        }
+        const payload = { ...data }
+        if (!payload.cover_image) delete payload.cover_image
+        return {
+          url: `properties/${id}/`,
+          method: 'PATCH',
+          body: payload,
+          headers: { 'Content-Type': 'application/json' },
+        }
       },
       invalidatesTags: ['Property'],
     }),
