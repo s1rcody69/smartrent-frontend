@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useLoginMutation, useRegisterMutation } from '../../features/auth/authApi'
 import { setCredentials } from '../../features/auth/authSlice'
-import { SmartRentInline } from '../../components/layout/SmartRentLogo' // Adjust this import path as necessary based on your folder structure
+import { SmartRentInline } from '../../components/layout/SmartRentLogo'
 import toast from 'react-hot-toast'
 import { Building2, Home, ArrowLeft, Eye, EyeOff, Phone, Mail, User, Lock } from 'lucide-react'
 
@@ -77,9 +77,18 @@ function AuthPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      // 👇 FIX: Map confirm_password to password2 for backend
       const payload = mode === 'login'
         ? { email: form.email, password: form.password }
-        : form
+        : {
+            email: form.email,
+            password: form.password,
+            password2: form.confirm_password,  // 👈 Key fix
+            first_name: form.first_name,
+            last_name: form.last_name,
+            phone_number: form.phone_number,
+            role: form.role,
+          }
       const fn = mode === 'login' ? login : register
       const res = await fn(payload).unwrap()
       dispatch(setCredentials(res))

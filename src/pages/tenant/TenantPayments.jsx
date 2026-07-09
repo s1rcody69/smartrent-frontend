@@ -1,216 +1,170 @@
 import { useState } from 'react'
-import { useGetInvoicesQuery, useStkPushMutation } from '../../features/payments/paymentsApi'
-import { useGetPaymentsQuery } from '../../features/payments/paymentsApi'
-import { CreditCard, FileText, Phone, AlertCircle, CheckCircle, Clock } from 'lucide-react'
+import { useGetInvoicesQuery, useGetPaymentsQuery } from '../../features/payments/paymentsApi'
+import { useStkPushMutation } from '../../features/payments/paymentsApi'
+import { CreditCard, CheckCircle, Clock, AlertCircle, X, Phone } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-function StatusBadge({ status, display }) {
-  const colors = {
-    paid: 'bg-emerald-50 text-emerald-700',
-    completed: 'bg-emerald-50 text-emerald-700',
-    pending: 'bg-amber-50 text-amber-700',
-    failed: 'bg-red-50 text-red-700',
-    overdue: 'bg-red-50 text-red-600',
-    cancelled: 'bg-slate-100 text-slate-500',
-  }
-  return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${colors[status] || 'bg-slate-50 text-slate-600'}`}>
-      {display || status}
-    </span>
-  )
-}
+const inputCls = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
 
 function TenantPayments() {
-  const { data: invoices, isLoading: invoicesLoading } = useGetInvoicesQuery()
-  const { data: payments, isLoading: paymentsLoading } = useGetPaymentsQuery()
-  const [stkPush, { isLoading: stkLoading }] = useStkPushMutation()
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [payModal, setPayModal] = useState(false)
-  const [selectedInvoice, setSelectedInvoice] = useState(null)
+  const { data: invoicesData, isLoading } = useGetInvoicesQuery()
+  const { data: paymentsData } = useGetPaymentsQuery()
+  const [stkPush, { isLoading: paying }] = useStkPushMutation()
+  const [payingInvoice, setPayingInvoice] = useState(null)
+  const [phone, setPhone] = useState('')
+  const [activeTab, setActiveTab] = useState('invoices')
 
-  const invoiceList = invoices?.results || []
-  const paymentList = payments?.results || []
-  const pendingInvoices = invoiceList.filter(i => i.status === 'pending')
+  const invoices = invoicesData?.results || []
+  const payments = paymentsData?.results || []
+  const pending = invoices.filter(i => i.status === 'pending')
+  const paid = invoices.filter(i => i.status === 'paid')
 
-  const totalPaid = paymentList
-    .filter(p => p.status === 'completed')
-    .reduce((sum, p) => sum + Number(p.amount), 0)
-
-  const handleStkPush = async () => {
-    if (!phoneNumber) {
-      toast.error('Please enter your M-Pesa phone number')
-      return
-    }
+  const handlePay = async (e) => {
+    e.preventDefault()
     try {
-      await stkPush({ invoice_id: selectedInvoice, phone_number: phoneNumber }).unwrap()
-      toast.success('M-Pesa STK push sent! Check your phone.')
-      setPayModal(false)
-      setPhoneNumber('')
-      setSelectedInvoice(null)
+      await stkPush({ invoice_id: payingInvoice.id, phone_number: phone, amount: payingInvoice.amount }).unwrap()
+      toast.success('Check your phone and enter your M-Pesa PIN')
+      setPayingInvoice(null)
+      setPhone('')
     } catch (err) {
-      toast.error(err?.data?.detail || 'M-Pesa payment failed. Try again.')
+      toast.error(err.data?.error || 'Payment failed. Try again.')
     }
   }
 
-  if (invoicesLoading || paymentsLoading) {
-    return (
-      <div className="p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-slate-200 rounded w-1/4" />
-          <div className="h-4 bg-slate-100 rounded w-1/3" />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl h-24 animate-pulse border border-slate-100" />
-            <div className="bg-white rounded-2xl h-24 animate-pulse border border-slate-100" />
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const statusIcon = (s) => ({
+    paid: <CheckCircle size={14} className="text-emerald-500" />,
+    pending: <Clock size={14} className="text-amber-500" />,
+    overdue: <AlertCircle size={14} className="text-red-500" />,
+  }[s])
+
+  const statusColor = (s) => ({
+    paid: 'bg-emerald-50 text-emerald-700',
+    pending: 'bg-amber-50 text-amber-700',
+    overdue: 'bg-red-50 text-red-600',
+  }[s] || 'bg-slate-100 text-slate-600')
 
   return (
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-slate-900">Payments</h1>
-        <p className="text-slate-500 text-sm mt-1">View your invoices and payment history</p>
+        <p className="text-slate-500 text-sm mt-1">Your invoices and payment history</p>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border border-slate-100 p-5">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Total Paid</p>
-          <p className="text-2xl font-black text-slate-900">KES {totalPaid.toLocaleString()}</p>
+      {/* Summary */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-amber-500 rounded-2xl p-5">
+          <p className="text-amber-100 text-xs font-semibold uppercase tracking-wide mb-2">Pending</p>
+          <p className="text-white text-3xl font-black">{pending.length}</p>
+          <p className="text-amber-100 text-xs mt-1">
+            {pending.length > 0 ? `KES ${pending.reduce((s, i) => s + Number(i.amount), 0).toLocaleString()} due` : 'All clear'}
+          </p>
         </div>
         <div className="bg-white rounded-2xl border border-slate-100 p-5">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Pending Invoices</p>
-          <p className="text-2xl font-black text-amber-600">{pendingInvoices.length}</p>
+          <p className="text-slate-500 text-xs font-semibold uppercase tracking-wide mb-2">Paid</p>
+          <p className="text-slate-900 text-3xl font-black">{paid.length}</p>
+          <p className="text-slate-400 text-xs mt-1">Total invoices paid</p>
         </div>
       </div>
 
-      {/* Pending Invoices */}
-      {pendingInvoices.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-base font-bold text-slate-900 mb-4">Pending Invoices</h2>
-          <div className="space-y-3">
-            {pendingInvoices.map(inv => (
-              <div key={inv.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">{inv.property_name} — Unit {inv.unit_number}</p>
-                  <p className="text-xs text-slate-400">
-                    Due: {new Date(inv.due_date).toLocaleDateString('en-KE')}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-sm font-bold text-slate-900">KES {Number(inv.amount).toLocaleString()}</p>
-                  <StatusBadge status={inv.status} display={inv.status_display} />
-                  <button
-                    onClick={() => {
-                      setSelectedInvoice(inv.id)
-                      setPayModal(true)
-                    }}
-                    className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
-                  >
-                    <Phone size={14} />
-                    Pay now
-                  </button>
-                </div>
-              </div>
-            ))}
+      {/* Tabs */}
+      <div className="flex gap-1 bg-slate-100 rounded-xl p-1 mb-6 w-fit">
+        {[['invoices', 'Invoices'], ['history', 'Payment History']].map(([tab, label]) => (
+          <button key={tab} onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === tab ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'invoices' && (
+        isLoading ? (
+          <div className="space-y-3">{[1,2].map(i => <div key={i} className="bg-white rounded-2xl h-20 animate-pulse border border-slate-100" />)}</div>
+        ) : invoices.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
+            <CreditCard size={40} className="text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500 font-medium">No invoices yet</p>
           </div>
-        </div>
-      )}
-
-      {/* Invoice History */}
-      {invoiceList.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-base font-bold text-slate-900 mb-4">Invoice History</h2>
+        ) : (
           <div className="space-y-3">
-            {invoiceList.filter(i => i.status !== 'pending').map(inv => (
-              <div key={inv.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">{inv.property_name} — Unit {inv.unit_number}</p>
-                  <p className="text-xs text-slate-400">
-                    {new Date(inv.due_date).toLocaleDateString('en-KE', { month: 'long', year: 'numeric' })}
-                  </p>
-                </div>
+            {invoices.map(inv => (
+              <div key={inv.id} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
-                  <p className="text-sm font-bold text-slate-900">KES {Number(inv.amount).toLocaleString()}</p>
-                  <StatusBadge status={inv.status} display={inv.status_display} />
+                  {statusIcon(inv.status)}
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{inv.property_name} — Unit {inv.unit_number}</p>
+                    <p className="text-slate-400 text-xs">{inv.invoice_month}/{inv.invoice_year} · Due {inv.due_date}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {invoiceList.length === 0 && (
-        <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
-          <FileText size={40} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 font-medium">No invoices yet</p>
-        </div>
-      )}
-
-      {/* Payment History */}
-      {paymentList.length > 0 && (
-        <div>
-          <h2 className="text-base font-bold text-slate-900 mb-4">Payment History</h2>
-          <div className="space-y-3">
-            {paymentList.map(p => (
-              <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">KES {Number(p.amount).toLocaleString()}</p>
-                  <p className="text-xs text-slate-400">
-                    {p.payment_method_display} • {new Date(p.created_at).toLocaleDateString('en-KE')}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {p.transaction_code && (
-                    <span className="text-xs text-slate-400 font-mono">{p.transaction_code}</span>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="font-black text-slate-900">KES {Number(inv.amount).toLocaleString()}</p>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusColor(inv.status)}`}>{inv.status_display}</span>
+                  </div>
+                  {inv.status === 'pending' && (
+                    <button onClick={() => setPayingInvoice(inv)} className="bg-amber-500 hover:bg-amber-400 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                      Pay now
+                    </button>
                   )}
-                  <StatusBadge status={p.status} display={p.status_display} />
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        )
       )}
 
-      {/* Pay Modal */}
-      {payModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">Pay via M-Pesa</h2>
-            <p className="text-sm text-slate-500 mb-4">
-              Enter your M-Pesa phone number to receive an STK push.
-            </p>
-            <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-500 mb-1">Phone Number</label>
-              <input
-                type="text"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="254712345678"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
-              />
+      {activeTab === 'history' && (
+        payments.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
+            <CheckCircle size={40} className="text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500 font-medium">No payments yet</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {payments.map(p => (
+              <div key={p.id} className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                    <CheckCircle size={16} className="text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">M-Pesa Payment</p>
+                    <p className="text-slate-400 text-xs">{p.transaction_code} · {new Date(p.created_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <p className="font-black text-slate-900">KES {Number(p.amount).toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {/* STK Push modal */}
+      {payingInvoice && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+              <h3 className="font-bold text-slate-900">Pay via M-Pesa</h3>
+              <button onClick={() => setPayingInvoice(null)} className="text-slate-400 hover:text-slate-600"><X size={20} /></button>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setPayModal(false)
-                  setPhoneNumber('')
-                  setSelectedInvoice(null)
-                }}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleStkPush}
-                disabled={stkLoading}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <Phone size={14} />
-                {stkLoading ? 'Sending...' : 'Send STK Push'}
-              </button>
+            <div className="px-6 py-5">
+              <div className="bg-slate-50 rounded-xl p-4 mb-5">
+                <p className="text-xs text-slate-400 mb-1">Amount to pay</p>
+                <p className="text-2xl font-black text-slate-900">KES {Number(payingInvoice.amount).toLocaleString()}</p>
+                <p className="text-slate-400 text-xs mt-1">{payingInvoice.property_name} — {payingInvoice.invoice_month}/{payingInvoice.invoice_year}</p>
+              </div>
+              <form onSubmit={handlePay} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">M-Pesa Phone Number</label>
+                  <div className="relative">
+                    <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required placeholder="0712345678" className={`${inputCls} pl-10`} />
+                  </div>
+                </div>
+                <button type="submit" disabled={paying} className="w-full bg-amber-500 hover:bg-amber-400 text-white py-3.5 rounded-xl font-bold text-sm disabled:opacity-50 transition-all">
+                  {paying ? 'Sending STK Push...' : 'Send M-Pesa Request'}
+                </button>
+                <p className="text-slate-400 text-xs text-center">You will receive a PIN prompt on your phone. Enter your M-Pesa PIN to complete payment.</p>
+              </form>
             </div>
           </div>
         </div>

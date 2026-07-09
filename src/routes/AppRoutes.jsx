@@ -7,6 +7,7 @@ import AuthPage from '../pages/auth/AuthPage'
 import LandlordDashboard from '../pages/landlord/LandlordDashboard'
 import TenantDashboard from '../pages/tenant/TenantDashboard'
 import AdminDashboard from '../pages/admin/AdminDashboard'
+import PropertyDetail from '../pages/public/PropertyDetail'
 
 function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/about" element={<About />} />
       <Route path="/properties" element={<PropertiesPage />} />
+      <Route path="/properties/:id" element={<PropertyDetail />} />
       <Route path="/login" element={<AuthPage />} />
       <Route path="/register" element={<AuthPage />} />
       <Route path="/landlord/*" element={
@@ -35,4 +37,4 @@ function AppRoutes() {
   )
 }
 
-export default AppRoutes
+export default AppRoutes 

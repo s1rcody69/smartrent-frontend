@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useGetLeasesQuery, useCreateLeaseMutation, useUpdateLeaseMutation, useGetTerminationRequestsQuery, useApproveTerminationMutation, useRejectTerminationMutation } from '../../features/leases/leasesApi'
 import { useGetUnitsQuery } from '../../features/properties/propertiesApi'
+import { useGetAvailableTenantsQuery } from '../../features/auth/authApi'
 import { Plus, X, FileText, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -40,6 +41,7 @@ function LandlordLeases() {
   const { data, isLoading } = useGetLeasesQuery()
   const { data: terminationsData } = useGetTerminationRequestsQuery()
   const { data: unitsData } = useGetUnitsQuery()
+  const { data: tenantsData, isLoading: tenantsLoading } = useGetAvailableTenantsQuery()
   const [createLease, { isLoading: creating }] = useCreateLeaseMutation()
   const [updateLease] = useUpdateLeaseMutation()
   const [approveTermination] = useApproveTerminationMutation()
@@ -48,6 +50,9 @@ function LandlordLeases() {
   const [showCreate, setShowCreate] = useState(false)
   const [activeTab, setActiveTab] = useState('leases')
   const [form, setForm] = useState({ tenant: '', unit: '', rent_amount: '', deposit_amount: '', start_date: '', end_date: '', notes: '' })
+
+  const tenants = tenantsData || []
+  const vacantUnits = (unitsData?.results || []).filter(u => u.status === 'vacant')
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -83,7 +88,6 @@ function LandlordLeases() {
 
   const leases = data?.results || []
   const terminations = terminationsData?.results || []
-  const vacantUnits = (unitsData?.results || []).filter(u => u.status === 'vacant')
   const pendingTerminations = terminations.filter(t => t.status === 'pending')
 
   return (
@@ -210,9 +214,30 @@ function LandlordLeases() {
         <Modal title="Create New Lease" onClose={() => setShowCreate(false)}>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Tenant Profile ID</label>
-              <input name="tenant" value={form.tenant} onChange={handleChange} required className={inputCls} placeholder="Tenant profile ID" />
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Tenant</label>
+              <select
+                name="tenant"
+                value={form.tenant}
+                onChange={handleChange}
+                required
+                className={inputCls}
+              >
+                <option value="">Select a tenant</option>
+                {tenantsLoading ? (
+                  <option value="" disabled>Loading tenants...</option>
+                ) : (
+                  tenants.map(t => (
+                    <option key={t.id} value={t.id}>
+                      {t.full_name || t.email || t.id}
+                    </option>
+                  ))
+                )}
+              </select>
+              {tenants.length === 0 && !tenantsLoading && (
+                <p className="text-xs text-amber-600 mt-1">No available tenants. All tenants have active leases.</p>
+              )}
             </div>
+
             <div>
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Unit</label>
               <select name="unit" value={form.unit} onChange={(e) => { const u = vacantUnits.find(u => u.id === e.target.value); setForm({ ...form, unit: e.target.value, rent_amount: u?.rent_amount || '' }) }} required className={inputCls}>
@@ -220,6 +245,7 @@ function LandlordLeases() {
                 {vacantUnits.map(u => <option key={u.id} value={u.id}>Unit {u.unit_number} · KES {Number(u.rent_amount).toLocaleString()}/mo</option>)}
               </select>
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Rent (KES)</label>

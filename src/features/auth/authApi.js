@@ -26,6 +26,10 @@ export const authApi = apiSlice.injectEndpoints({
       query: () => 'auth/tenant/profile/',
       providesTags: ['User'],
     }),
+    getAvailableTenants: builder.query({  // 👈 NEW
+      query: () => 'auth/available-tenants/',
+      providesTags: ['AvailableTenants'],
+    }),
     updateLandlordProfile: builder.mutation({
       query: (data) => ({ url: 'auth/landlord/profile/', method: 'PATCH', body: data }),
       invalidatesTags: ['User'],
@@ -45,6 +49,7 @@ export const {
   useRefreshTokenMutation,
   useGetLandlordProfileQuery,
   useGetTenantProfileQuery,
+  useGetAvailableTenantsQuery,  // 👈 NEW
   useUpdateLandlordProfileMutation,
   useUpdateTenantProfileMutation,
 } = authApi
