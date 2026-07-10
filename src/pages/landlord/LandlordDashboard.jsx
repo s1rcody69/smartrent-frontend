@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import DashboardLayout from '../../components/layout/DashboardLayout'
-import { LayoutDashboard, Building2, FileText, Wrench, CreditCard } from 'lucide-react'
+import { LayoutDashboard, Building2, FileText, Wrench, CreditCard } from 'lucide-react'  // 👈 Removed User
 import LandlordOverview from './LandlordOverview'
 import LandlordProperties from './LandlordProperties'
 import LandlordLeases from './LandlordLeases'
 import LandlordMaintenance from './LandlordMaintenance'
 import LandlordPayments from './LandlordPayments'
+import LandlordProfile from './LandlordProfile'
 
 const NAV_LINKS = [
   { to: '/landlord/dashboard', label: 'Overview', Icon: LayoutDashboard },
@@ -13,6 +14,7 @@ const NAV_LINKS = [
   { to: '/landlord/leases', label: 'Leases', Icon: FileText },
   { to: '/landlord/maintenance', label: 'Maintenance', Icon: Wrench },
   { to: '/landlord/payments', label: 'Payments', Icon: CreditCard },
+  // 👈 Removed My Profile from here
 ]
 
 function LandlordDashboard() {
@@ -25,6 +27,7 @@ function LandlordDashboard() {
         <Route path="leases" element={<LandlordLeases />} />
         <Route path="maintenance" element={<LandlordMaintenance />} />
         <Route path="payments" element={<LandlordPayments />} />
+        <Route path="profile" element={<LandlordProfile />} />  {/* 👈 Kept the route */}
         <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Routes>
     </DashboardLayout>

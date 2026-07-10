@@ -17,7 +17,8 @@ function LandlordPayments() {
 
   const invoices = invoicesData?.results || []
   const payments = paymentsData?.results || []
-  const activeLeases = (leasesData?.results || []).filter(l => l.status === 'active')
+  // 👇 CHANGED: Show pending leases instead of active leases
+  const pendingLeases = (leasesData?.results || []).filter(l => l.status === 'pending')
 
   const statusColor = (s) => ({
     pending: 'bg-amber-50 text-amber-700',
@@ -149,10 +150,26 @@ function LandlordPayments() {
             <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Lease</label>
-                <select name="lease" value={form.lease} onChange={e => { const l = activeLeases.find(l => l.id === e.target.value); setForm({ ...form, lease: e.target.value, amount: l?.rent_amount || '' }) }} required className={inputCls}>
-                  <option value="">Select active lease</option>
-                  {activeLeases.map(l => <option key={l.id} value={l.id}>{l.tenant_name} · {l.property_name} Unit {l.unit_number}</option>)}
+                <select
+                  name="lease"
+                  value={form.lease}
+                  onChange={e => {
+                    const l = pendingLeases.find(l => l.id === e.target.value)
+                    setForm({ ...form, lease: e.target.value, amount: l?.rent_amount || '' })
+                  }}
+                  required
+                  className={inputCls}
+                >
+                  <option value="">Select pending lease</option>
+                  {pendingLeases.map(l => (
+                    <option key={l.id} value={l.id}>
+                      {l.tenant_name} · {l.property_name} Unit {l.unit_number}
+                    </option>
+                  ))}
                 </select>
+                {pendingLeases.length === 0 && (
+                  <p className="text-xs text-amber-600 mt-1">No pending leases available.</p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
