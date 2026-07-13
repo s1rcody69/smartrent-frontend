@@ -1,98 +1,151 @@
 import { useState } from 'react'
-import { Users, Search, Shield, Building2, Home, Loader } from 'lucide-react'
 import { useGetAllUsersQuery } from '../../features/auth/authApi'
+import { Search, Shield, Building2, Home, CheckCircle, XCircle, Users as UsersIcon, UserPlus } from 'lucide-react'
 
 function RoleBadge({ role }) {
   const map = {
-    admin: 'bg-purple-50 text-purple-700',
-    landlord: 'bg-amber-50 text-amber-700',
-    tenant: 'bg-emerald-50 text-emerald-700',
+    admin: 'bg-surface-container text-secondary',
+    landlord: 'bg-warning-container text-warning',
+    tenant: 'bg-success-container text-success',
   }
   const icons = { admin: Shield, landlord: Building2, tenant: Home }
   const Icon = icons[role] || Shield
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${map[role] || 'bg-slate-100 text-slate-600'}`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${map[role] || 'bg-surface-container-highest text-on-surface-variant'}`}>
       <Icon size={11} />{role}
     </span>
   )
 }
 
 function AdminUsers() {
+  const { data: users, isLoading } = useGetAllUsersQuery()
   const [search, setSearch] = useState('')
-  const { data: users, isLoading, error } = useGetAllUsersQuery()
+  const [roleFilter, setRoleFilter] = useState('all')
 
-  // Filter users based on search
-  const filteredUsers = users?.filter(u => 
-    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.email?.toLowerCase().includes(search.toLowerCase())
-  ) || []
+  const filtered = (users || []).filter(u => {
+    const matchSearch = search === '' ||
+      u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase())
+    const matchRole = roleFilter === 'all' || u.role === roleFilter
+    return matchSearch && matchRole
+  })
+
+  const counts = {
+    all: (users || []).length,
+    admin: (users || []).filter(u => u.role === 'admin').length,
+    landlord: (users || []).filter(u => u.role === 'landlord').length,
+    tenant: (users || []).filter(u => u.role === 'tenant').length,
+  }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900">Users</h1>
-        <p className="text-slate-500 text-sm mt-1">Manage platform users</p>
+    <div className="space-y-8">
+      {/* Header */}
+      <header className="flex justify-between items-end">
+        <div>
+          <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">User Management</p>
+          <h2 className="text-display-lg text-display-lg text-primary tracking-tight">Users</h2>
+          <p className="text-body-md text-body-md text-on-surface-variant mt-2">{(users || []).length} registered users on the platform</p>
+        </div>
+      </header>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          ['All Users', counts.all, 'bg-primary-container text-on-primary-container'],
+          ['Admins', counts.admin, 'bg-secondary/10 text-secondary'],
+          ['Landlords', counts.landlord, 'bg-warning-container text-warning'],
+          ['Tenants', counts.tenant, 'bg-success-container text-success'],
+        ].map(([label, count, bg]) => (
+          <div key={label} className={`glass-panel ambient-shadow rounded-2xl p-5 border border-outline-variant/30 ${bg}`}>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2 opacity-70">{label}</p>
+            <p className="text-3xl font-black">{count}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="relative mb-6">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search users by name or email..."
-          className="w-full bg-white border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
-        />
+      {/* Filters */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by name or email..."
+            className="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-11 pr-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
+          />
+        </div>
+        <div className="flex gap-1 bg-surface-container rounded-xl p-1">
+          {['all', 'admin', 'landlord', 'tenant'].map(role => (
+            <button
+              key={role}
+              onClick={() => setRoleFilter(role)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
+                roleFilter === role
+                  ? 'bg-white text-on-surface shadow-sm'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+              }`}
+            >
+              {role}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+      {/* Table */}
+      <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 overflow-hidden">
+        <div className="grid grid-cols-5 bg-surface-container-low border-b border-outline-variant/30 px-6 py-3">
+          {['User', 'Email', 'Phone', 'Role', 'Status'].map(h => (
+            <p key={h} className="text-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
+          ))}
+        </div>
+
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader size={32} className="text-amber-500 animate-spin" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-20 text-red-500">
-            <p>Failed to load users</p>
-            <p className="text-xs text-slate-400 mt-2">Only admins can view all users.</p>
-          </div>
-        ) : users?.length === 0 ? (
-          <div className="text-center py-20">
-            <Users size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 font-medium">No users found</p>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-4 bg-slate-50 border-b border-slate-100 px-6 py-3">
-              {['Name', 'Email', 'Role', 'Joined'].map(h => (
-                <p key={h} className="text-xs font-bold text-slate-500 uppercase tracking-wide">{h}</p>
-              ))}
-            </div>
-
-            {filteredUsers.map(user => (
-              <div key={user.id} className="grid grid-cols-4 px-6 py-4 border-b border-slate-50 hover:bg-slate-50 transition-colors items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                    <span className="text-amber-600 font-bold text-sm">{user.first_name?.[0] || '?'}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-slate-900">{user.full_name || 'Unnamed'}</p>
-                </div>
-                <p className="text-sm text-slate-500">{user.email}</p>
-                <RoleBadge role={user.role} />
-                <p className="text-sm text-slate-400">{new Date(user.date_joined).toLocaleDateString()}</p>
+          <div className="space-y-px">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="grid grid-cols-5 px-6 py-4 animate-pulse gap-4">
+                {[1,2,3,4,5].map(j => <div key={j} className="h-4 bg-surface-container rounded" />)}
               </div>
             ))}
-
-            {filteredUsers.length === 0 && search && (
-              <div className="text-center py-10 text-slate-400 text-sm">
-                No users found matching "{search}"
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center">
+            <UsersIcon size={32} className="text-outline mx-auto mb-2" />
+            <p className="text-on-surface-variant text-sm">No users found</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-outline-variant/20">
+            {filtered.map(u => (
+              <div key={u.id} className="grid grid-cols-5 px-6 py-4 hover:bg-surface-container-low transition-colors items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+                    <span className="text-secondary font-bold text-sm">{u.first_name?.[0] || '?'}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-on-surface truncate">{u.full_name || 'Unnamed'}</p>
+                </div>
+                <p className="text-sm text-on-surface-variant truncate">{u.email}</p>
+                <p className="text-sm text-on-surface-variant">{u.phone_number || '—'}</p>
+                <RoleBadge role={u.role} />
+                <div className="flex items-center gap-1.5">
+                  {u.is_active
+                    ? (
+                      <>
+                        <CheckCircle size={13} className="text-success" />
+                        <span className="text-xs text-success font-medium">Active</span>
+                      </>
+                    )
+                    : (
+                      <>
+                        <XCircle size={13} className="text-error" />
+                        <span className="text-xs text-error font-medium">Inactive</span>
+                      </>
+                    )
+                  }
+                </div>
               </div>
-            )}
-          </>
+            ))}
+          </div>
         )}
       </div>
-
-      <p className="text-xs text-slate-400 mt-4 text-center">
-        Showing {filteredUsers.length} of {users?.length || 0} total users
-      </p>
     </div>
   )
 }

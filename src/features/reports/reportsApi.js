@@ -11,6 +11,9 @@ export const reportsApi = apiSlice.injectEndpoints({
     getOccupancyReport: builder.query({
       query: () => 'reports/occupancy/',
     }),
+    getPaymentReport: builder.query({
+      query: () => 'reports/payments/',
+    }),
   }),
 })
 

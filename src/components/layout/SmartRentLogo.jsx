@@ -1,10 +1,11 @@
-import React from 'react';
+import react from 'react';
 
-const AMBER = "#F59E0B";
-const DARK = "#1C1C2E";
+const INDIGO = "#5B4FFF";
+const INDIGO_LIGHT = "#7B72FF";
+const NAVY = "#0A0E27";
+const NAVY2 = "#111530";
 
-// 1. The core logomark
-export function SmartRentIcon({ size = 40 }) {
+export function SmartRentMark({ size = 44 }) {
   return (
     <svg
       width={size}
@@ -14,8 +15,7 @@ export function SmartRentIcon({ size = 40 }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-label="SmartRent logomark"
     >
-      {/* Rounded square tile */}
-      <rect width="44" height="44" rx="10" fill={AMBER} />
+      <rect width="44" height="44" rx="10" fill={INDIGO} />
 
       {/* Chimney */}
       <rect x="27" y="9" width="5" height="10" rx="1.5" fill="white" />
@@ -36,27 +36,29 @@ export function SmartRentIcon({ size = 40 }) {
       {/* Door */}
       <path
         d="M 18 37 L 18 29 Q 18 27 20 27 L 24 27 Q 26 27 26 29 L 26 37"
-        fill={AMBER}
+        fill={INDIGO}
       />
 
-      {/* Left window */}
-      <rect x="12" y="25" width="5" height="4" rx="1" fill={AMBER} />
+      {/* Window */}
+      <rect x="12" y="25" width="5" height="4" rx="1" fill={INDIGO} />
 
       {/* Smart pulse dot */}
-      <circle cx="37" cy="7" r="3.5" fill={DARK} />
+      <circle cx="37" cy="7" r="3.5" fill={NAVY} />
       <circle cx="37" cy="7" r="1.8" fill="white" />
     </svg>
   );
 }
 
-// 2. Full wordmark (Icon + Title + Tagline)
-export function SmartRentWordmark({ size = 44, theme = "light" }) {
-  const textColor = theme === "dark" ? "white" : DARK;
-  const subColor = theme === "dark" ? "rgba(255,255,255,0.55)" : "#6B7280";
+export function SmartRentWordmark({
+  size = 44,
+  theme = "light",
+}) {
+  const textColor = theme === "dark" ? "white" : NAVY;
+  const subColor = theme === "dark" ? "rgba(255,255,255,0.45)" : "#9CA3AF";
 
   return (
     <div className="flex items-center gap-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      <SmartRentIcon size={size} />
+      <SmartRentMark size={size} />
       <div className="flex flex-col leading-none gap-0.5">
         <span
           style={{
@@ -68,7 +70,7 @@ export function SmartRentWordmark({ size = 44, theme = "light" }) {
           }}
         >
           Smart
-          <span style={{ color: AMBER }}>Rent</span>
+          <span style={{ color: INDIGO }}>Rent</span>
         </span>
         <span
           style={{
@@ -87,13 +89,14 @@ export function SmartRentWordmark({ size = 44, theme = "light" }) {
   );
 }
 
-// 3. Compact wordmark (Icon + Title only)
-export function SmartRentInline({ size = 36, theme = "light" }) {
-  const textColor = theme === "dark" ? "white" : DARK;
-
+export function SmartRentInline({
+  size = 36,
+  theme = "light",
+}) {
+  const textColor = theme === "dark" ? "white" : NAVY;
   return (
     <div className="flex items-center gap-2.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      <SmartRentIcon size={size} />
+      <SmartRentMark size={size} />
       <span
         style={{
           color: textColor,
@@ -103,7 +106,7 @@ export function SmartRentInline({ size = 36, theme = "light" }) {
           lineHeight: 1,
         }}
       >
-        Smart<span style={{ color: AMBER }}>Rent</span>
+        Smart<span style={{ color: INDIGO }}>Rent</span>
       </span>
     </div>
   );
