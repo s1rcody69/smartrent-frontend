@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGetPropertiesQuery, useCreatePropertyMutation, useUpdatePropertyMutation, useDeletePropertyMutation, useGetUnitsQuery, useCreateUnitMutation, useDeleteUnitMutation } from '../../features/properties/propertiesApi'
-import { Plus, Pencil, Trash2, X, Building2, MapPin, Home, ChevronDown, ChevronUp, Image } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Building2, MapPin, Home, ChevronDown, ChevronUp, Image, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const STOCK_IMAGES = {
@@ -12,11 +12,11 @@ const STOCK_IMAGES = {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-          <h3 className="font-bold text-slate-900">{title}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+    <div className="fixed inset-0 bg-primary/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+      <div className="bg-surface-container-lowest glass-panel rounded-2xl w-full max-w-lg shadow-2xl border border-outline-variant/30">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-outline-variant/30">
+          <h3 className="font-headline-md text-headline-md text-on-surface">{title}</h3>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -29,13 +29,13 @@ function Modal({ title, onClose, children }) {
 function FieldGroup({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">{label}</label>
+      <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">{label}</label>
       {children}
     </div>
   )
 }
 
-const inputCls = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
+const inputCls = "w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
 
 function LandlordProperties() {
   const { data, isLoading } = useGetPropertiesQuery()
@@ -122,26 +122,27 @@ function LandlordProperties() {
   const getPropertyUnits = (id) => units.filter(u => u.property === id)
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-8">
+      <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-slate-900">Properties</h1>
-          <p className="text-slate-500 text-sm mt-1">{properties.length} listing{properties.length !== 1 ? 's' : ''}</p>
+          <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Property Management</p>
+          <h1 className="text-display-lg text-primary tracking-tight">Properties</h1>
+          <p className="text-body-md text-on-surface-variant mt-2">{properties.length} listing{properties.length !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-amber-500/25 hover:-translate-y-0.5">
+        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-secondary/20 hover:shadow-secondary/30 hover:-translate-y-0.5">
           <Plus size={16} /> Add Property
         </button>
-      </div>
+      </header>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {[1,2,3].map(i => <div key={i} className="bg-white rounded-2xl h-64 animate-pulse border border-slate-100" />)}
+          {[1,2,3].map(i => <div key={i} className="glass-panel ambient-shadow rounded-2xl h-64 animate-pulse border border-outline-variant/30" />)}
         </div>
       ) : properties.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
-          <Building2 size={40} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 font-medium">No properties yet</p>
-          <button onClick={() => setShowCreate(true)} className="mt-4 text-amber-600 hover:text-amber-700 text-sm font-semibold">Add your first property →</button>
+        <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 py-20 text-center">
+          <Building2 size={40} className="text-outline mx-auto mb-3" />
+          <p className="text-on-surface-variant font-medium">No properties yet</p>
+          <button onClick={() => setShowCreate(true)} className="mt-4 text-secondary hover:underline text-sm font-semibold">Add your first property →</button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -149,66 +150,66 @@ function LandlordProperties() {
             const propertyUnits = getPropertyUnits(property.id)
             const isExpanded = expandedProperty === property.id
             return (
-              <div key={property.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={property.id} className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 overflow-hidden hover:shadow-[0_10px_30px_-5px_rgba(15,23,42,0.1)] transition-shadow">
                 <div className="flex items-center gap-4 p-5">
-                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-surface-container shrink-0">
                     {property.cover_image
                       ? <img src={property.cover_image} alt={property.name} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center"><Image size={24} className="text-slate-300" /></div>
+                      : <div className="w-full h-full flex items-center justify-center"><Image size={24} className="text-outline" /></div>
                     }
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-slate-900 truncate">{property.name}</h3>
-                      <span className="bg-amber-50 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full capitalize shrink-0">{property.property_type}</span>
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${property.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                      <h3 className="font-bold text-on-surface truncate">{property.name}</h3>
+                      <span className="bg-secondary/10 text-secondary text-xs font-semibold px-2 py-0.5 rounded-full capitalize shrink-0">{property.property_type}</span>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${property.is_active ? 'bg-success-container text-success' : 'bg-surface-container-highest text-on-surface-variant'}`}>
                         {property.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 text-slate-500 text-xs">
+                    <div className="flex items-center gap-1 text-on-surface-variant text-xs">
                       <MapPin size={12} />
                       <span>{property.address}, {property.city}</span>
                     </div>
-                    <p className="text-slate-500 text-xs mt-1">{property.total_units} unit{property.total_units !== 1 ? 's' : ''}</p>
+                    <p className="text-on-surface-variant text-xs mt-1">{property.total_units} unit{property.total_units !== 1 ? 's' : ''}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => openEdit(property)} className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
-                      <Pencil size={15} className="text-slate-600" />
+                    <button onClick={() => openEdit(property)} className="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition-colors">
+                      <Pencil size={15} className="text-on-surface-variant" />
                     </button>
-                    <button onClick={() => setDeletingId(property.id)} className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors">
-                      <Trash2 size={15} className="text-red-500" />
+                    <button onClick={() => setDeletingId(property.id)} className="w-9 h-9 rounded-lg bg-error-container hover:bg-error/20 flex items-center justify-center transition-colors">
+                      <Trash2 size={15} className="text-error" />
                     </button>
-                    <button onClick={() => setExpandedProperty(isExpanded ? null : property.id)} className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
-                      {isExpanded ? <ChevronUp size={15} className="text-slate-600" /> : <ChevronDown size={15} className="text-slate-600" />}
+                    <button onClick={() => setExpandedProperty(isExpanded ? null : property.id)} className="w-9 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center transition-colors">
+                      {isExpanded ? <ChevronUp size={15} className="text-on-surface-variant" /> : <ChevronDown size={15} className="text-on-surface-variant" />}
                     </button>
                   </div>
                 </div>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-100 p-5">
+                  <div className="border-t border-outline-variant/30 p-5">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-bold text-slate-700">Units</h4>
-                      <button onClick={() => setShowUnitForm(property.id)} className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 hover:text-amber-700">
+                      <h4 className="text-sm font-bold text-on-surface">Units</h4>
+                      <button onClick={() => setShowUnitForm(property.id)} className="flex items-center gap-1.5 text-xs font-semibold text-secondary hover:underline">
                         <Plus size={13} /> Add unit
                       </button>
                     </div>
                     {propertyUnits.length === 0 ? (
-                      <p className="text-slate-400 text-sm">No units yet.</p>
+                      <p className="text-on-surface-variant text-sm">No units yet.</p>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {propertyUnits.map(unit => (
-                          <div key={unit.id} className="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
+                          <div key={unit.id} className="flex items-center justify-between bg-surface-container-low rounded-lg px-4 py-3 border border-outline-variant/20">
                             <div>
-                              <p className="text-sm font-semibold text-slate-900">Unit {unit.unit_number}</p>
-                              <p className="text-xs text-slate-500">{unit.bedrooms}bd · {unit.bathrooms}ba · KES {Number(unit.rent_amount).toLocaleString()}/mo</p>
+                              <p className="text-sm font-semibold text-on-surface">Unit {unit.unit_number}</p>
+                              <p className="text-xs text-on-surface-variant">{unit.bedrooms}bd · {unit.bathrooms}ba · KES {Number(unit.rent_amount).toLocaleString()}/mo</p>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                unit.status === 'vacant' ? 'bg-emerald-50 text-emerald-700' :
-                                unit.status === 'occupied' ? 'bg-blue-50 text-blue-700' :
-                                'bg-amber-50 text-amber-700'
+                                unit.status === 'vacant' ? 'bg-success-container text-success' :
+                                unit.status === 'occupied' ? 'bg-secondary/10 text-secondary' :
+                                'bg-warning-container text-warning'
                               }`}>{unit.status}</span>
-                              <button onClick={async () => { try { await deleteUnit(unit.id).unwrap(); toast.success('Unit removed') } catch { toast.error('Cannot delete — lease attached') }}} className="text-red-400 hover:text-red-600">
+                              <button onClick={async () => { try { await deleteUnit(unit.id).unwrap(); toast.success('Unit removed') } catch { toast.error('Cannot delete — lease attached') }}} className="text-error/60 hover:text-error">
                                 <Trash2 size={13} />
                               </button>
                             </div>
@@ -255,7 +256,7 @@ function LandlordProperties() {
             <FieldGroup label="Cover Image URL (optional)">
               <input name="cover_image" value={form.cover_image || ''} onChange={(e) => setForm({ ...form, cover_image: e.target.value })} className={inputCls} placeholder="https://... or leave blank for auto stock photo" />
             </FieldGroup>
-            <button type="submit" disabled={creating} className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-bold text-sm disabled:opacity-50 transition-all">
+            <button type="submit" disabled={creating} className="w-full bg-secondary hover:bg-secondary/90 text-white py-3 rounded-lg font-bold text-sm disabled:opacity-50 transition-all">
               {creating ? 'Creating...' : 'Create Property'}
             </button>
           </form>
@@ -293,7 +294,7 @@ function LandlordProperties() {
             <FieldGroup label="Cover Image URL">
               <input value={form.cover_image || ''} onChange={(e) => setForm({ ...form, cover_image: e.target.value })} className={inputCls} />
             </FieldGroup>
-            <button type="submit" disabled={updating} className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-bold text-sm disabled:opacity-50 transition-all">
+            <button type="submit" disabled={updating} className="w-full bg-secondary hover:bg-secondary/90 text-white py-3 rounded-lg font-bold text-sm disabled:opacity-50 transition-all">
               {updating ? 'Saving...' : 'Save Changes'}
             </button>
           </form>
@@ -333,7 +334,7 @@ function LandlordProperties() {
             <FieldGroup label="Rent Amount (KES)">
               <input type="number" name="rent_amount" value={unitForm.rent_amount} onChange={handleUnitChange} required className={inputCls} placeholder="25000" />
             </FieldGroup>
-            <button type="submit" disabled={creatingUnit} className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-bold text-sm disabled:opacity-50 transition-all">
+            <button type="submit" disabled={creatingUnit} className="w-full bg-secondary hover:bg-secondary/90 text-white py-3 rounded-lg font-bold text-sm disabled:opacity-50 transition-all">
               {creatingUnit ? 'Adding...' : 'Add Unit'}
             </button>
           </form>
@@ -343,10 +344,10 @@ function LandlordProperties() {
       {/* Delete confirm */}
       {deletingId && (
         <Modal title="Delete Property" onClose={() => setDeletingId(null)}>
-          <p className="text-slate-500 text-sm mb-6">This will permanently delete this property and all its units. This cannot be undone.</p>
+          <p className="text-on-surface-variant text-sm mb-6">This will permanently delete this property and all its units. This cannot be undone.</p>
           <div className="flex gap-3">
-            <button onClick={() => setDeletingId(null)} className="flex-1 border border-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors">Cancel</button>
-            <button onClick={handleDelete} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm font-semibold transition-colors">Delete</button>
+            <button onClick={() => setDeletingId(null)} className="flex-1 border border-outline-variant text-on-surface-variant py-2.5 rounded-lg text-sm font-semibold hover:bg-surface-container transition-colors">Cancel</button>
+            <button onClick={handleDelete} className="flex-1 bg-error hover:bg-error/90 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors">Delete</button>
           </div>
         </Modal>
       )}

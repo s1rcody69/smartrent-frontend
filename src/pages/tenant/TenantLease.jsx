@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useGetLeasesQuery, useCreateTerminationRequestMutation, useGetTerminationRequestsQuery } from '../../features/leases/leasesApi'
-import { FileText, AlertTriangle, Clock, CheckCircle, XCircle, X } from 'lucide-react'
+import { FileText, AlertTriangle, Clock, CheckCircle, XCircle, X, Home, Calendar, DollarSign, Shield } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const inputCls = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
+const inputCls = "w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
 
 function TenantLease() {
   const { data: leasesData, isLoading } = useGetLeasesQuery()
@@ -29,31 +29,40 @@ function TenantLease() {
     }
   }
 
-  if (isLoading) return <div className="p-8"><div className="bg-white rounded-2xl h-48 animate-pulse border border-slate-100" /></div>
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-100">
+      <div className="glass-panel ambient-shadow rounded-2xl p-8 w-full max-w-2xl animate-pulse border border-outline-variant/30">
+        <div className="h-8 bg-surface-container rounded w-32 mb-4" />
+        <div className="h-4 bg-surface-container rounded w-48 mb-6" />
+        <div className="h-48 bg-surface-container rounded-2xl" />
+      </div>
+    </div>
+  )
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-900">My Lease</h1>
-        <p className="text-slate-500 text-sm mt-1">Your current and past lease agreements</p>
-      </div>
+    <div className="space-y-8">
+      <header>
+        <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
+        <h1 className="text-display-lg text-primary tracking-tight">My Lease</h1>
+        <p className="text-body-md text-on-surface-variant mt-2">Your current and past lease agreements</p>
+      </header>
 
       {!activeLease ? (
-        <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
-          <FileText size={40} className="text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 font-medium">No active lease found</p>
+        <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 py-20 text-center">
+          <FileText size={40} className="text-outline mx-auto mb-3" />
+          <p className="text-on-surface-variant font-medium">No active lease found</p>
         </div>
       ) : (
         <>
           {/* Active lease card */}
-          <div className="bg-slate-900 rounded-2xl p-7 mb-5">
+          <div className="bg-primary-container rounded-2xl p-7 border border-white/5">
             <div className="flex items-start justify-between mb-5">
               <div>
-                <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-1">Active Lease</p>
+                <p className="text-secondary text-xs font-bold uppercase tracking-widest mb-1">Active Lease</p>
                 <h2 className="text-white font-bold text-xl">{activeLease.property_name}</h2>
-                <p className="text-slate-400 text-sm mt-0.5">Unit {activeLease.unit_number}</p>
+                <p className="text-on-primary-container text-sm mt-0.5">Unit {activeLease.unit_number}</p>
               </div>
-              <span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-500/30">Active</span>
+              <span className="bg-success/20 text-success text-xs font-bold px-3 py-1.5 rounded-full border border-success/30">Active</span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
@@ -62,75 +71,75 @@ function TenantLease() {
                 ['Start Date', activeLease.start_date],
                 ['End Date', activeLease.end_date || 'Open-ended'],
               ].map(([label, value]) => (
-                <div key={label} className="bg-white/5 rounded-xl p-3">
-                  <p className="text-slate-400 text-xs mb-1">{label}</p>
+                <div key={label} className="bg-white/5 rounded-lg p-3">
+                  <p className="text-on-primary-container text-xs mb-1">{label}</p>
                   <p className="text-white font-bold text-sm">{value}</p>
                 </div>
               ))}
             </div>
             {activeLease.notes && (
-              <div className="mt-4 bg-white/5 rounded-xl p-3">
-                <p className="text-slate-400 text-xs mb-1">Notes</p>
-                <p className="text-slate-300 text-sm">{activeLease.notes}</p>
+              <div className="mt-4 bg-white/5 rounded-lg p-3">
+                <p className="text-on-primary-container text-xs mb-1">Notes</p>
+                <p className="text-white/80 text-sm">{activeLease.notes}</p>
               </div>
             )}
           </div>
 
           {/* Deposit forfeiture warning */}
-          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 mb-5 flex items-start gap-3">
-            <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+          <div className="bg-warning-container border border-warning/20 rounded-2xl p-5 flex items-start gap-3">
+            <AlertTriangle size={18} className="text-warning shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-amber-800 text-sm">Security Deposit Policy</p>
-              <p className="text-amber-700 text-xs mt-1">Your security deposit of KES {Number(activeLease.deposit_amount).toLocaleString()} is non-refundable in the event of early lease termination. All outstanding invoices must be settled before any termination can be approved.</p>
+              <p className="font-semibold text-warning text-sm">Security Deposit Policy</p>
+              <p className="text-warning/80 text-xs mt-1">Your security deposit of KES {Number(activeLease.deposit_amount).toLocaleString()} is non-refundable in the event of early lease termination. All outstanding invoices must be settled before any termination can be approved.</p>
             </div>
           </div>
 
           {/* Termination section */}
           {pendingTermination ? (
-            <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-5">
+            <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 p-6">
               <div className="flex items-center gap-2 mb-3">
-                <Clock size={18} className="text-amber-500" />
-                <h3 className="font-bold text-slate-900">Termination Request Pending</h3>
+                <Clock size={18} className="text-warning" />
+                <h3 className="font-headline-md text-headline-md text-on-surface">Termination Request Pending</h3>
               </div>
-              <p className="text-slate-500 text-sm mb-3">Your request to vacate by <strong>{pendingTermination.requested_vacate_date}</strong> is under review.</p>
-              <div className="bg-slate-50 rounded-xl p-4">
-                <p className="text-xs text-slate-400 mb-1">Your reason</p>
-                <p className="text-slate-700 text-sm">{pendingTermination.reason}</p>
+              <p className="text-on-surface-variant text-sm mb-3">Your request to vacate by <strong className="text-on-surface">{pendingTermination.requested_vacate_date}</strong> is under review.</p>
+              <div className="bg-surface-container-low rounded-lg p-4">
+                <p className="text-xs text-on-surface-variant mb-1">Your reason</p>
+                <p className="text-on-surface text-sm">{pendingTermination.reason}</p>
               </div>
-              <div className="mt-3 bg-amber-50 border border-amber-100 rounded-xl p-3">
-                <p className="text-amber-700 text-xs">{pendingTermination.deposit_note}</p>
+              <div className="mt-3 bg-warning-container border border-warning/20 rounded-lg p-3">
+                <p className="text-warning text-xs">{pendingTermination.deposit_note}</p>
               </div>
             </div>
           ) : (
             !showTermForm ? (
               <button
                 onClick={() => setShowTermForm(true)}
-                className="flex items-center gap-2 border border-red-200 text-red-600 hover:bg-red-50 px-5 py-3 rounded-xl text-sm font-semibold transition-colors"
+                className="flex items-center gap-2 border border-error/30 text-error hover:bg-error-container px-5 py-3 rounded-lg text-sm font-semibold transition-colors"
               >
                 <XCircle size={16} /> Request Early Termination
               </button>
             ) : (
-              <div className="bg-white rounded-2xl border border-red-100 p-6">
+              <div className="glass-panel ambient-shadow rounded-2xl border border-error/30 p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-slate-900">Request Early Termination</h3>
-                  <button onClick={() => setShowTermForm(false)} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+                  <h3 className="font-headline-md text-headline-md text-on-surface">Request Early Termination</h3>
+                  <button onClick={() => setShowTermForm(false)} className="text-on-surface-variant hover:text-on-surface transition-colors"><X size={18} /></button>
                 </div>
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-5">
-                  <p className="text-red-700 text-xs font-semibold flex items-center gap-1.5"><AlertTriangle size={12} /> Important</p>
-                  <p className="text-red-600 text-xs mt-1">Your deposit is non-refundable on early termination. All outstanding invoices must be paid before this request can be approved.</p>
+                <div className="bg-error-container border border-error/20 rounded-lg p-4 mb-5">
+                  <p className="text-error text-xs font-semibold flex items-center gap-1.5"><AlertTriangle size={12} /> Important</p>
+                  <p className="text-error/80 text-xs mt-1">Your deposit is non-refundable on early termination. All outstanding invoices must be paid before this request can be approved.</p>
                 </div>
                 <form onSubmit={handleTermSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Reason for leaving</label>
+                    <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">Reason for leaving</label>
                     <textarea value={termForm.reason} onChange={e => setTermForm({ ...termForm, reason: e.target.value })} required rows={3} className={inputCls} placeholder="Please explain why you need to vacate early..." />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Requested vacate date</label>
+                    <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">Requested vacate date</label>
                     <input type="date" value={termForm.requested_vacate_date} onChange={e => setTermForm({ ...termForm, requested_vacate_date: e.target.value })} required className={inputCls} />
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setShowTermForm(false)} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-50">Cancel</button>
-                    <button type="submit" disabled={submitting} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
+                    <button type="button" onClick={() => setShowTermForm(false)} className="flex-1 border border-outline-variant text-on-surface-variant py-2.5 rounded-lg text-sm font-semibold hover:bg-surface-container transition-colors">Cancel</button>
+                    <button type="submit" disabled={submitting} className="flex-1 bg-error hover:bg-error/90 text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50 transition-colors">
                       {submitting ? 'Submitting...' : 'Submit Request'}
                     </button>
                   </div>
@@ -143,16 +152,16 @@ function TenantLease() {
 
       {/* Past leases */}
       {allLeases.filter(l => l.status !== 'active').length > 0 && (
-        <div className="mt-6 bg-white rounded-2xl border border-slate-100 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Past Leases</h3>
+        <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 p-6">
+          <h3 className="font-headline-md text-headline-md text-on-surface mb-4">Past Leases</h3>
           <div className="space-y-3">
             {allLeases.filter(l => l.status !== 'active').map(l => (
-              <div key={l.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+              <div key={l.id} className="flex items-center justify-between py-2 border-b border-outline-variant/20 last:border-0">
                 <div>
-                  <p className="font-semibold text-slate-700 text-sm">{l.property_name} — Unit {l.unit_number}</p>
-                  <p className="text-slate-400 text-xs">{l.start_date} → {l.end_date}</p>
+                  <p className="font-semibold text-on-surface text-sm">{l.property_name} — Unit {l.unit_number}</p>
+                  <p className="text-on-surface-variant text-xs">{l.start_date} → {l.end_date}</p>
                 </div>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${l.status === 'terminated' ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-600'}`}>{l.status}</span>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${l.status === 'terminated' ? 'bg-error-container text-error' : 'bg-surface-container-highest text-on-surface-variant'}`}>{l.status}</span>
               </div>
             ))}
           </div>

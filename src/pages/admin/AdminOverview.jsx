@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import { useGetDashboardSummaryQuery } from '../../features/reports/reportsApi'
 import { Building2, Users, FileText, Wrench, DollarSign, TrendingUp, Home, AlertCircle, ArrowUpRight, Plus } from 'lucide-react'
 
-function StatCard({ label, value, sub, accent, loading }) {
+function StatCard({ label, value, sub, Icon, accent, loading }) {
+  // 👈 Make sure Icon is being received as a prop
   return (
     <div className={`glass-panel ambient-shadow rounded-2xl p-6 border ${accent ? 'border-secondary/30' : 'border-outline-variant/30'}`}>
       <div className="flex items-center justify-between mb-4">
         <p className={`text-xs font-semibold uppercase tracking-wide ${accent ? 'text-secondary' : 'text-on-surface-variant'}`}>{label}</p>
         <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${accent ? 'bg-secondary text-white' : 'bg-surface-container'}`}>
-          <Icon size={17} className={accent ? 'text-white' : 'text-on-surface-variant'} />
+          {Icon && <Icon size={17} className={accent ? 'text-white' : 'text-on-surface-variant'} />}
         </div>
       </div>
       {loading ? (
@@ -33,9 +34,9 @@ function AdminOverview() {
       {/* Header */}
       <header className="flex justify-between items-end">
         <div>
-          <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Admin Panel</p>
-          <h2 className="text-display-lg text-display-lg text-primary tracking-tight">Platform Overview</h2>
-          <p className="text-body-md text-body-md text-on-surface-variant mt-2">
+          <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Admin Panel</p>
+          <h2 className="text-display-lg text-primary tracking-tight">Platform Overview</h2>
+          <p className="text-body-md text-on-surface-variant mt-2">
             {new Date().toLocaleDateString('en-KE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>

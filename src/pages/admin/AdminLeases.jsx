@@ -44,9 +44,9 @@ function AdminLeases() {
       {/* Header */}
       <header className="flex justify-between items-end">
         <div>
-          <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
-          <h2 className="text-display-lg text-display-lg text-primary tracking-tight">All Leases</h2>
-          <p className="text-body-md text-body-md text-on-surface-variant mt-2">{leases.length} leases across all properties</p>
+          <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
+          <h2 className="text-display-lg text-primary tracking-tight">All Leases</h2>
+          <p className="text-body-md text-on-surface-variant mt-2">{leases.length} leases across all properties</p>
         </div>
         {pending.length > 0 && (
           <div className="flex items-center gap-2 bg-warning-container border border-warning/20 rounded-xl px-4 py-2.5">
@@ -78,7 +78,7 @@ function AdminLeases() {
         <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 overflow-hidden">
           <div className="grid grid-cols-5 bg-surface-container-low border-b border-outline-variant/30 px-6 py-3">
             {['Tenant', 'Property & Unit', 'Landlord', 'Rent/mo', 'Status'].map(h => (
-              <p key={h} className="text-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
+              <p key={h} className="text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
             ))}
           </div>
           {isLoading ? (

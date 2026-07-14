@@ -31,9 +31,9 @@ function AdminPayments() {
       {/* Header */}
       <header className="flex justify-between items-end">
         <div>
-          <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Payment Management</p>
-          <h2 className="text-display-lg text-display-lg text-primary tracking-tight">All Payments</h2>
-          <p className="text-body-md text-body-md text-on-surface-variant mt-2">Platform-wide invoices and payment history</p>
+          <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Payment Management</p>
+          <h2 className="text-display-lg text-primary tracking-tight">All Payments</h2>
+          <p className="text-body-md text-on-surface-variant mt-2">Platform-wide invoices and payment history</p>
         </div>
       </header>
 
@@ -92,7 +92,7 @@ function AdminPayments() {
         <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 overflow-hidden">
           <div className="grid grid-cols-5 bg-surface-container-low border-b border-outline-variant/30 px-6 py-3">
             {['Tenant', 'Property', 'Period', 'Amount', 'Status'].map(h => (
-              <p key={h} className="text-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
+              <p key={h} className="text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
             ))}
           </div>
           {isLoading ? (
@@ -135,7 +135,7 @@ function AdminPayments() {
         <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 overflow-hidden">
           <div className="grid grid-cols-4 bg-surface-container-low border-b border-outline-variant/30 px-6 py-3">
             {['Transaction Code', 'Phone', 'Amount', 'Date'].map(h => (
-              <p key={h} className="text-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
+              <p key={h} className="text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
             ))}
           </div>
           {payments.length === 0 ? (

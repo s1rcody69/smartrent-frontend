@@ -26,9 +26,9 @@ function AdminProperties() {
       {/* Header */}
       <header className="flex justify-between items-end">
         <div>
-          <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Property Management</p>
-          <h2 className="text-display-lg text-display-lg text-primary tracking-tight">All Properties</h2>
-          <p className="text-body-md text-body-md text-on-surface-variant mt-2">{properties.length} properties across all landlords</p>
+          <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Property Management</p>
+          <h2 className="text-display-lg text-primary tracking-tight">All Properties</h2>
+          <p className="text-body-md text-on-surface-variant mt-2">{properties.length} properties across all landlords</p>
         </div>
       </header>
 
@@ -48,7 +48,7 @@ function AdminProperties() {
           {/* Table Header */}
           <div className="grid grid-cols-5 bg-surface-container-low border-b border-outline-variant/30 px-6 py-3">
             {['Property', 'Landlord', 'Location', 'Units', 'Actions'].map(h => (
-              <p key={h} className="text-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
+              <p key={h} className="text-label-sm text-on-surface-variant uppercase tracking-wider">{h}</p>
             ))}
           </div>
 

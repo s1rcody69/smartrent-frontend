@@ -6,31 +6,52 @@ html {
 }
 
 body {
-  background-color: #f8f9ff;
+  background-color: #eef2f6;
   color: #0b1c30;
   font-family: "Inter", sans-serif;
+}
+
+/* ── GLASSMORPHISM ────────────────────────────────── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* ── SHADOWS ──────────────────────────────────────── */
+.ambient-shadow {
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.1);
+}
+
+.ambient-shadow:hover {
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.18);
 }
 
 /* ── CUSTOM SCROLLBAR ─────────────────────────────── */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #94a3b8;
   border-radius: 10px;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
-
 .sidebar-scrollbar::-webkit-scrollbar-thumb {
-  background: #c6c6cd;
+  background: #94a3b8;
   border-radius: 10px;
 }
 
@@ -39,7 +60,6 @@ body {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
-
 .shimmer {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   background-size: 200% 100%;
@@ -48,6 +68,120 @@ body {
 
 /* ── SELECTION ────────────────────────────────────── */
 ::selection {
-  background: #6063ee;
+  background: #4648d4;
   color: #ffffff;
+}
+
+/* ── LINE CLAMP ───────────────────────────────────── */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  /* Standard property for compatibility */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* Standard property for compatibility */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Standard property for compatibility */
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── TAILWIND CSS V4 CUSTOM PROPERTIES ───────────── */
+@theme {
+  /* ── Primary Colors ──────────────────────────────── */
+  --color-primary: #0B1C30;
+  --color-secondary: #4648D4;
+  --color-accent: #6063EE;
+
+  /* ── Background & Surface ────────────────────────── */
+  --color-background: #eef2f6;
+  --color-surface: #eef2f6;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container-high: #cbd5e1;
+  --color-surface-container-highest: #94a3b8;
+  --color-surface-container-lowest: #ffffff;
+  --color-adjacent: #eef2f6;
+
+  /* ── Text Colors ─────────────────────────────────── */
+  --color-on-surface: #0B1C30;
+  --color-on-surface-variant: #334155;
+  --color-on-background: #0B1C30;
+
+  /* ── Outline ─────────────────────────────────────── */
+  --color-outline: #64748b;
+  --color-outline-variant: #94a3b8;
+
+  /* ── Status Colors ───────────────────────────────── */
+  --color-success: #16a34a;
+  --color-success-container: #dcfce7;
+  --color-warning: #d97706;
+  --color-warning-container: #fef3c7;
+  --color-error: #dc2626;
+  --color-error-container: #fee2e2;
+
+  /* ── Fonts ───────────────────────────────────────── */
+  --font-body-lg: Inter, sans-serif;
+  --font-body-md: Inter, sans-serif;
+  --font-display-lg: Inter, sans-serif;
+  --font-headline-lg: Inter, sans-serif;
+  --font-headline-md: Inter, sans-serif;
+  --font-label-md: Geist, sans-serif;
+  --font-label-sm: Geist, sans-serif;
+
+  /* ── Font Sizes ──────────────────────────────────── */
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+  
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg--font-weight: 600;
+  
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+  
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+  
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+  
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.02em;
+  --text-label-md--font-weight: 500;
+  
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--font-weight: 600;
+
+  /* ── Spacing ──────────────────────────────────────── */
+  --spacing-gutter: 24px;
+  --spacing-container-max: 1440px;
+  --spacing-margin-desktop: 40px;
+  --spacing-margin-mobile: 16px;
+
+  /* ── Border Radius ────────────────────────────────── */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
 }

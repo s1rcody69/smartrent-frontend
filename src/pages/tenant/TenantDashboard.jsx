@@ -27,7 +27,7 @@ function TenantDashboard() {
         <Route path="lease" element={<TenantLease />} />
         <Route path="maintenance" element={<TenantMaintenance />} />
         <Route path="payments" element={<TenantPayments />} />
-        <Route path="profile" element={<TenantProfile />} />  {/* 👈 Kept the route */}
+        <Route path="profile" element={<TenantProfile />} /> 
         <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Routes>
     </DashboardLayout>

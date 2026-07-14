@@ -28,9 +28,9 @@ function AdminReports() {
     <div className="space-y-8">
       {/* Header */}
       <header>
-        <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Analytics</p>
-        <h2 className="text-display-lg text-display-lg text-primary tracking-tight">Reports & Analytics</h2>
-        <p className="text-body-md text-body-md text-on-surface-variant mt-2">Platform-wide performance metrics</p>
+        <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Analytics</p>
+        <h2 className="text-display-lg text-primary tracking-tight">Reports & Analytics</h2>
+        <p className="text-body-md text-on-surface-variant mt-2">Platform-wide performance metrics</p>
       </header>
 
       {/* Revenue Summary */}

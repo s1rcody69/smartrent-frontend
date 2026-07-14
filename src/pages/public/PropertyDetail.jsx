@@ -1,377 +1,20 @@
-// import { useState, useEffect } from 'react'
-// import { useParams, useNavigate, Link } from 'react-router-dom'
-// import { useSelector } from 'react-redux'
-// import { useGetPropertyByIdQuery } from '../../features/properties/propertiesApi'
-// import { useCreateLeaseMutation } from '../../features/leases/leasesApi'
-// import Navbar from '../../components/layout/Navbar'
-// import { MapPin, Home, Users, Calendar, ArrowLeft, Check, X, AlertCircle, Loader } from 'lucide-react'
-// import toast from 'react-hot-toast'
-
-// function StatusBadge({ status }) {
-//   const colors = {
-//     vacant: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-//     occupied: 'bg-slate-50 text-slate-600 border-slate-200',
-//     maintenance: 'bg-amber-50 text-amber-700 border-amber-200',
-//   }
-//   return (
-//     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${colors[status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
-//       {status.charAt(0).toUpperCase() + status.slice(1)}
-//     </span>
-//   )
-// }
-
-// function ApplyModal({ isOpen, onClose, unit, onApply }) {
-//   const { user } = useSelector(s => s.auth)
-//   const [startDate, setStartDate] = useState('')
-//   const [endDate, setEndDate] = useState('')
-//   const [loading, setLoading] = useState(false)
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()
-//     if (!startDate) {
-//       toast.error('Please select a start date')
-//       return
-//     }
-//     setLoading(true)
-//     try {
-//       await onApply({
-//         start_date: startDate,
-//         end_date: endDate || null,
-//       })
-//       onClose()
-//     } catch (err) {
-//       // Error handled in parent
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
-
-//   if (!isOpen) return null
-
-//   return (
-//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-//       <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl">
-//         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-//           <h3 className="font-bold text-slate-900 text-lg">Apply for Unit {unit?.unit_number}</h3>
-//           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
-//             <X size={20} />
-//           </button>
-//         </div>
-
-//         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
-//           <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-//             <p className="text-sm text-slate-600">
-//               <span className="font-semibold">Property:</span> {unit?.property_name}
-//             </p>
-//             <p className="text-sm text-slate-600">
-//               <span className="font-semibold">Unit:</span> {unit?.unit_number}
-//             </p>
-//             <p className="text-sm text-slate-600">
-//               <span className="font-semibold">Rent:</span> KES {unit?.rent_amount?.toLocaleString()}/mo
-//             </p>
-//           </div>
-
-//           <div>
-//             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
-//               Start Date <span className="text-red-500">*</span>
-//             </label>
-//             <input
-//               type="date"
-//               value={startDate}
-//               onChange={(e) => setStartDate(e.target.value)}
-//               min={new Date().toISOString().split('T')[0]}
-//               required
-//               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
-//             />
-//           </div>
-
-//           <div>
-//             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
-//               End Date <span className="text-slate-400 text-xs font-normal">(Optional - leave blank for open-ended)</span>
-//             </label>
-//             <input
-//               type="date"
-//               value={endDate}
-//               onChange={(e) => setEndDate(e.target.value)}
-//               min={startDate || new Date().toISOString().split('T')[0]}
-//               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
-//             />
-//           </div>
-
-//           <div className="flex gap-3 pt-2">
-//             <button
-//               type="button"
-//               onClick={onClose}
-//               className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors"
-//             >
-//               Cancel
-//             </button>
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-//             >
-//               {loading ? <Loader size={16} className="animate-spin" /> : <Check size={16} />}
-//               {loading ? 'Applying...' : 'Apply Now'}
-//             </button>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   )
-// }
-
-// function UnitCard({ unit, onApply }) {
-//   const isVacant = unit.status === 'vacant'
-
-//   return (
-//     <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
-//       <div className="flex items-start justify-between mb-3">
-//         <div>
-//           <h4 className="font-bold text-slate-900">Unit {unit.unit_number}</h4>
-//           <p className="text-xs text-slate-400 capitalize">{unit.unit_type_display || 'Unit'}</p>
-//         </div>
-//         <StatusBadge status={unit.status} />
-//       </div>
-
-//       <div className="grid grid-cols-3 gap-2 text-sm mb-4">
-//         <div className="bg-slate-50 rounded-xl p-2 text-center">
-//           <p className="text-xs text-slate-400">Bedrooms</p>
-//           <p className="font-semibold text-slate-900">{unit.bedrooms}</p>
-//         </div>
-//         <div className="bg-slate-50 rounded-xl p-2 text-center">
-//           <p className="text-xs text-slate-400">Bathrooms</p>
-//           <p className="font-semibold text-slate-900">{unit.bathrooms}</p>
-//         </div>
-//         <div className="bg-slate-50 rounded-xl p-2 text-center">
-//           <p className="text-xs text-slate-400">Floor</p>
-//           <p className="font-semibold text-slate-900">{unit.floor || '—'}</p>
-//         </div>
-//       </div>
-
-//       <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-//         <p className="font-bold text-slate-900">KES {Number(unit.rent_amount).toLocaleString()}<span className="text-xs font-normal text-slate-400">/mo</span></p>
-//         {isVacant ? (
-//           <button
-//             onClick={() => onApply(unit)}
-//             className="bg-amber-500 hover:bg-amber-400 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
-//           >
-//             Apply Now
-//           </button>
-//         ) : (
-//           <span className="text-slate-400 text-sm font-medium">Not available</span>
-//         )}
-//       </div>
-//     </div>
-//   )
-// }
-
-// function PropertyDetail() {
-//   const { id } = useParams()
-//   const navigate = useNavigate()
-//   const { user } = useSelector(s => s.auth)
-//   const { data, isLoading, error } = useGetPropertyByIdQuery(id)
-//   const [createLease, { isLoading: creating }] = useCreateLeaseMutation()
-
-//   const [selectedUnit, setSelectedUnit] = useState(null)
-//   const [showModal, setShowModal] = useState(false)
-
-//   const handleApply = (unit) => {
-//     if (!user) {
-//       toast.error('Please log in to apply for a unit')
-//       navigate('/login')
-//       return
-//     }
-//     setSelectedUnit(unit)
-//     setShowModal(true)
-//   }
-
-//   const handleApplySubmit = async (formData) => {
-//     try {
-//       // 👇 No tenant field - backend will auto-set it for tenants
-//       const leaseData = {
-//         unit: selectedUnit.id,
-//         rent_amount: selectedUnit.rent_amount,
-//         start_date: formData.start_date,
-//         end_date: formData.end_date || null,
-//       }
-
-//       console.log('Creating lease with data:', leaseData)
-
-//       await createLease(leaseData).unwrap()
-      
-//       toast.success(`Application submitted for Unit ${selectedUnit.unit_number}!`)
-//       navigate('/tenant/leases')
-//     } catch (err) {
-//       console.error('Lease creation error:', err)
-//       const errorData = err?.data
-//       let errorMsg = 'Failed to apply. Please try again.'
-      
-//       if (errorData) {
-//         if (typeof errorData === 'string') {
-//           errorMsg = errorData
-//         } else if (errorData.unit) {
-//           errorMsg = `Unit: ${errorData.unit.join(', ')}`
-//         } else if (errorData.start_date) {
-//           errorMsg = `Start date: ${errorData.start_date.join(', ')}`
-//         } else if (errorData.non_field_errors) {
-//           errorMsg = errorData.non_field_errors.join(', ')
-//         } else {
-//           errorMsg = Object.values(errorData).flat().join(', ')
-//         }
-//       }
-//       toast.error(errorMsg)
-//     }
-//   }
-
-//   if (isLoading) {
-//     return (
-//       <div className="min-h-screen bg-slate-50">
-//         <Navbar />
-//         <div className="pt-20 max-w-7xl mx-auto px-6 py-12">
-//           <div className="animate-pulse space-y-6">
-//             <div className="h-8 bg-slate-200 rounded w-1/3" />
-//             <div className="h-64 bg-slate-200 rounded-2xl" />
-//             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//               {[1,2,3].map(i => <div key={i} className="h-48 bg-slate-200 rounded-2xl" />)}
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     )
-//   }
-
-//   if (error || !data) {
-//     return (
-//       <div className="min-h-screen bg-slate-50">
-//         <Navbar />
-//         <div className="pt-20 max-w-7xl mx-auto px-6 py-12">
-//           <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
-//             <AlertCircle size={40} className="text-slate-300 mx-auto mb-3" />
-//             <p className="text-slate-500 font-medium">Property not found</p>
-//             <Link to="/properties" className="mt-4 text-amber-600 hover:text-amber-700 text-sm font-semibold inline-block">
-//               ← Back to properties
-//             </Link>
-//           </div>
-//         </div>
-//       </div>
-//     )
-//   }
-
-//   const property = data
-//   const units = property.units || []
-
-//   return (
-//     <div className="min-h-screen bg-slate-50">
-//       <Navbar />
-
-//       <div className="pt-20 max-w-7xl mx-auto px-6 py-12">
-//         {/* Back button */}
-//         <Link
-//           to="/properties"
-//           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 text-sm font-medium mb-6 transition-colors"
-//         >
-//           <ArrowLeft size={16} /> Back to properties
-//         </Link>
-
-//         {/* Property header */}
-//         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden mb-8">
-//           <div className="h-64 bg-slate-200">
-//             {property.cover_image ? (
-//               <img src={property.cover_image} alt={property.name} className="w-full h-full object-cover" />
-//             ) : (
-//               <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
-//                 <Home size={48} className="text-slate-400" />
-//               </div>
-//             )}
-//           </div>
-
-//           <div className="p-6">
-//             <div className="flex items-start justify-between mb-4">
-//               <div>
-//                 <h1 className="text-3xl font-black text-slate-900">{property.name}</h1>
-//                 <div className="flex items-center gap-2 mt-1">
-//                   <MapPin size={16} className="text-slate-400" />
-//                   <span className="text-slate-500">{property.address}, {property.city}</span>
-//                 </div>
-//               </div>
-//               <span className="bg-amber-50 text-amber-700 text-sm font-semibold px-3 py-1.5 rounded-full capitalize">
-//                 {property.property_type}
-//               </span>
-//             </div>
-
-//             {property.description && (
-//               <p className="text-slate-600 text-sm leading-relaxed">{property.description}</p>
-//             )}
-
-//             <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-100">
-//               <div className="flex items-center gap-2 text-sm text-slate-500">
-//                 <Home size={16} className="text-slate-400" />
-//                 <span>{property.total_units} total units</span>
-//               </div>
-//               <div className="flex items-center gap-2 text-sm text-slate-500">
-//                 <Users size={16} className="text-slate-400" />
-//                 <span>{property.units?.filter(u => u.status === 'occupied').length || 0} occupied</span>
-//               </div>
-//               <div className="flex items-center gap-2 text-sm text-slate-500">
-//                 <Check size={16} className="text-slate-400" />
-//                 <span>{property.units?.filter(u => u.status === 'vacant').length || 0} vacant</span>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Units section */}
-//         <div>
-//           <h2 className="text-2xl font-bold text-slate-900 mb-4">Available Units</h2>
-//           {units.length === 0 ? (
-//             <div className="bg-white rounded-2xl border border-slate-100 py-12 text-center">
-//               <AlertCircle size={32} className="text-slate-300 mx-auto mb-2" />
-//               <p className="text-slate-500">No units listed for this property</p>
-//             </div>
-//           ) : (
-//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//               {units.map(unit => (
-//                 <UnitCard key={unit.id} unit={unit} onApply={handleApply} />
-//               ))}
-//             </div>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Apply Modal */}
-//       <ApplyModal
-//         isOpen={showModal}
-//         onClose={() => {
-//           setShowModal(false)
-//           setSelectedUnit(null)
-//         }}
-//         unit={selectedUnit}
-//         onApply={handleApplySubmit}
-//       />
-//     </div>
-//   )
-// }
-
-// export default PropertyDetail
-
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useGetPropertyByIdQuery } from '../../features/properties/propertiesApi'
 import { useCreateLeaseMutation } from '../../features/leases/leasesApi'
 import Navbar from '../../components/layout/Navbar'
-import { MapPin, Home, Building2, ArrowLeft, Bed, Bath, DollarSign, Check, X, AlertCircle, Loader } from 'lucide-react'
+import { MapPin, Home, Building2, ArrowLeft, Bed, Bath, DollarSign, Check, X, AlertCircle, Loader, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 function StatusBadge({ status }) {
   const colors = {
-    vacant: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    occupied: 'bg-slate-50 text-slate-600 border-slate-200',
-    maintenance: 'bg-amber-50 text-amber-700 border-amber-200',
+    vacant: 'bg-success-container text-success border-success/20',
+    occupied: 'bg-surface-container-highest text-on-surface-variant border-outline-variant/20',
+    maintenance: 'bg-warning-container text-warning border-warning/20',
   }
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${colors[status] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${colors[status] || 'bg-surface-container-highest text-on-surface-variant border-outline-variant/20'}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   )
@@ -406,31 +49,31 @@ function ApplyModal({ isOpen, onClose, unit, onApply }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-          <h3 className="font-bold text-slate-900 text-lg">Apply for Unit {unit?.unit_number}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/60 backdrop-blur-sm">
+      <div className="bg-surface-container-lowest glass-panel rounded-2xl w-full max-w-md mx-4 shadow-2xl border border-outline-variant/30">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-outline-variant/30">
+          <h3 className="font-headline-md text-headline-md text-on-surface">Apply for Unit {unit?.unit_number}</h3>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors">
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
-          <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-            <p className="text-sm text-slate-600">
+          <div className="bg-surface-container-low rounded-lg p-4 space-y-2 border border-outline-variant/20">
+            <p className="text-sm text-on-surface">
               <span className="font-semibold">Property:</span> {unit?.property_name}
             </p>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-on-surface">
               <span className="font-semibold">Unit:</span> {unit?.unit_number}
             </p>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-on-surface">
               <span className="font-semibold">Rent:</span> KES {unit?.rent_amount?.toLocaleString()}/mo
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
-              Start Date <span className="text-red-500">*</span>
+            <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">
+              Start Date <span className="text-error">*</span>
             </label>
             <input
               type="date"
@@ -438,20 +81,20 @@ function ApplyModal({ isOpen, onClose, unit, onApply }) {
               onChange={(e) => setStartDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
               required
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
+              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
-              End Date <span className="text-slate-400 text-xs font-normal">(Optional - leave blank for open-ended)</span>
+            <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">
+              End Date <span className="text-on-surface-variant text-xs font-normal">(Optional - leave blank for open-ended)</span>
             </label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               min={startDate || new Date().toISOString().split('T')[0]}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all"
+              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
             />
           </div>
 
@@ -459,14 +102,14 @@ function ApplyModal({ isOpen, onClose, unit, onApply }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors"
+              className="flex-1 py-2.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container text-sm font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 rounded-lg bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-secondary/20"
             >
               {loading ? <Loader size={16} className="animate-spin" /> : <Check size={16} />}
               {loading ? 'Applying...' : 'Apply Now'}
@@ -482,41 +125,41 @@ function UnitCard({ unit, propertyName, onApply }) {
   const isVacant = unit.status === 'vacant'
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
+    <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 p-5 hover:shadow-[0_10px_30px_-5px_rgba(15,23,42,0.1)] transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h4 className="font-bold text-slate-900">Unit {unit.unit_number}</h4>
-          <p className="text-xs text-slate-400 capitalize">{unit.unit_type_display || 'Unit'}</p>
+          <h4 className="font-headline-md text-headline-md text-on-surface">Unit {unit.unit_number}</h4>
+          <p className="text-xs text-on-surface-variant capitalize">{unit.unit_type_display || 'Unit'}</p>
         </div>
         <StatusBadge status={unit.status} />
       </div>
 
       <div className="grid grid-cols-3 gap-2 text-sm mb-4">
-        <div className="bg-slate-50 rounded-xl p-2 text-center">
-          <p className="text-xs text-slate-400">Bedrooms</p>
-          <p className="font-semibold text-slate-900">{unit.bedrooms}</p>
+        <div className="bg-surface-container-low rounded-lg p-2 text-center border border-outline-variant/20">
+          <p className="text-xs text-on-surface-variant">Bedrooms</p>
+          <p className="font-semibold text-on-surface">{unit.bedrooms}</p>
         </div>
-        <div className="bg-slate-50 rounded-xl p-2 text-center">
-          <p className="text-xs text-slate-400">Bathrooms</p>
-          <p className="font-semibold text-slate-900">{unit.bathrooms}</p>
+        <div className="bg-surface-container-low rounded-lg p-2 text-center border border-outline-variant/20">
+          <p className="text-xs text-on-surface-variant">Bathrooms</p>
+          <p className="font-semibold text-on-surface">{unit.bathrooms}</p>
         </div>
-        <div className="bg-slate-50 rounded-xl p-2 text-center">
-          <p className="text-xs text-slate-400">Floor</p>
-          <p className="font-semibold text-slate-900">{unit.floor || '—'}</p>
+        <div className="bg-surface-container-low rounded-lg p-2 text-center border border-outline-variant/20">
+          <p className="text-xs text-on-surface-variant">Floor</p>
+          <p className="font-semibold text-on-surface">{unit.floor || '—'}</p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-        <p className="font-bold text-slate-900">KES {Number(unit.rent_amount).toLocaleString()}<span className="text-xs font-normal text-slate-400">/mo</span></p>
+      <div className="flex items-center justify-between pt-3 border-t border-outline-variant/30">
+        <p className="font-bold text-on-surface">KES {Number(unit.rent_amount).toLocaleString()}<span className="text-xs font-normal text-on-surface-variant">/mo</span></p>
         {isVacant ? (
           <button
             onClick={() => onApply(unit)}
-            className="bg-amber-500 hover:bg-amber-400 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+            className="bg-secondary hover:bg-secondary/90 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-secondary/20 hover:shadow-secondary/30"
           >
             Apply Now
           </button>
         ) : (
-          <span className="text-slate-400 text-sm font-medium">Not available</span>
+          <span className="text-on-surface-variant text-sm font-medium">Not available</span>
         )}
       </div>
     </div>
@@ -580,14 +223,14 @@ function PropertyDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-20 max-w-7xl mx-auto px-6 py-12">
+        <div className="pt-20 max-w-container-max mx-auto px-margin-desktop py-12">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-slate-200 rounded w-1/3" />
-            <div className="h-64 bg-slate-200 rounded-2xl" />
+            <div className="h-8 bg-surface-container rounded w-1/3" />
+            <div className="h-64 bg-surface-container rounded-2xl" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[1,2,3].map(i => <div key={i} className="h-48 bg-slate-200 rounded-2xl" />)}
+              {[1,2,3].map(i => <div key={i} className="h-48 bg-surface-container rounded-2xl" />)}
             </div>
           </div>
         </div>
@@ -597,13 +240,13 @@ function PropertyDetail() {
 
   if (error || !property) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-20 max-w-7xl mx-auto px-6 py-12">
-          <div className="bg-white rounded-2xl border border-slate-100 py-20 text-center">
-            <AlertCircle size={40} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 font-medium">Property not found</p>
-            <Link to="/properties" className="mt-4 text-amber-600 hover:text-amber-700 text-sm font-semibold inline-block">
+        <div className="pt-20 max-w-container-max mx-auto px-margin-desktop py-12">
+          <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 py-20 text-center">
+            <AlertCircle size={40} className="text-outline mx-auto mb-3" />
+            <p className="text-on-surface-variant font-medium">Property not found</p>
+            <Link to="/properties" className="mt-4 text-secondary hover:text-secondary/80 text-sm font-semibold inline-block">
               ← Back to properties
             </Link>
           </div>
@@ -612,31 +255,32 @@ function PropertyDetail() {
     )
   }
 
-  // Use units directly from property (nested via serializer)
   const units = property.units || []
   const vacantUnits = units.filter(u => u.status === 'vacant').length
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background font-body-md">
       <Navbar />
 
       {/* Hero image */}
-      <div className="h-80 bg-slate-200 relative overflow-hidden pt-16">
+      <div className="h-80 bg-surface-container relative overflow-hidden pt-16">
         {property.cover_image
           ? <img src={property.cover_image} alt={property.name} className="w-full h-full object-cover" />
-          : <div className="w-full h-full bg-linear-to-br from-slate-200 to-slate-300 flex items-center justify-center"><Building2 size={48} className="text-slate-400" /></div>
+          : <div className="w-full h-full bg-linear-to-br from-surface-container to-surface-container-highest flex items-center justify-center">
+              <Building2 size={48} className="text-outline" />
+            </div>
         }
-        <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-primary/60 to-transparent" />
         <div className="absolute bottom-6 left-6 flex items-center gap-3">
-          <span className="bg-white/95 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full capitalize">
+          <span className="bg-surface-container-lowest/95 backdrop-blur-sm text-on-surface text-xs font-semibold px-3 py-1.5 rounded-full capitalize border border-outline-variant/20">
             {property.property_type}
           </span>
           {vacantUnits > 0 ? (
-            <span className="bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+            <span className="bg-success-container text-success text-xs font-semibold px-3 py-1.5 rounded-full">
               {vacantUnits} unit{vacantUnits !== 1 ? 's' : ''} available
             </span>
           ) : (
-            <span className="bg-slate-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+            <span className="bg-surface-container-highest text-on-surface-variant text-xs font-semibold px-3 py-1.5 rounded-full">
               Fully occupied
             </span>
           )}
@@ -644,33 +288,33 @@ function PropertyDetail() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-10">
-        <Link to="/properties" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 text-sm font-medium mb-6 transition-colors">
+        <Link to="/properties" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium mb-6 transition-colors">
           <ArrowLeft size={15} /> Back to properties
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Main info */}
           <div className="md:col-span-2">
-            <h1 className="text-3xl font-black text-slate-900 mb-2">{property.name}</h1>
-            <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-6">
-              <MapPin size={14} className="text-amber-500" />
+            <h1 className="text-display-lg text-primary mb-2">{property.name}</h1>
+            <div className="flex items-center gap-1.5 text-on-surface-variant text-sm mb-6">
+              <MapPin size={14} className="text-secondary" />
               <span>{property.address}, {property.city}, Kenya</span>
             </div>
 
             {property.description && (
-              <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
-                <h3 className="font-bold text-slate-900 mb-3">About this property</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{property.description}</p>
+              <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 p-6 mb-6">
+                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">About this property</h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed">{property.description}</p>
               </div>
             )}
 
             {/* Units with Apply buttons */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-6">
-              <h3 className="font-bold text-slate-900 mb-4">
+            <div className="glass-panel ambient-shadow rounded-2xl border border-outline-variant/30 p-6">
+              <h3 className="font-headline-md text-headline-md text-on-surface mb-4">
                 Available Units ({vacantUnits} vacant)
               </h3>
               {units.length === 0 ? (
-                <p className="text-slate-400 text-sm">No units listed yet.</p>
+                <p className="text-on-surface-variant text-sm">No units listed yet.</p>
               ) : (
                 <div className="grid grid-cols-1 gap-4">
                   {units.map(unit => (
@@ -688,8 +332,8 @@ function PropertyDetail() {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            <div className="bg-slate-900 rounded-2xl p-6">
-              <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-3">Property Summary</p>
+            <div className="bg-primary-container rounded-2xl p-6">
+              <p className="text-secondary text-xs font-bold uppercase tracking-widest mb-3">Property Summary</p>
               {[
                 ['Type', property.property_type, true],
                 ['City', property.city, false],
@@ -698,19 +342,19 @@ function PropertyDetail() {
                 ['Status', property.is_active ? 'Active' : 'Inactive', false],
               ].map(([label, value, cap]) => (
                 <div key={label} className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
-                  <p className="text-slate-400 text-xs">{label}</p>
+                  <p className="text-on-primary-container text-xs">{label}</p>
                   <p className={`text-white text-xs font-semibold ${cap ? 'capitalize' : ''}`}>{value}</p>
                 </div>
               ))}
             </div>
 
-            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
-              <h3 className="font-bold text-amber-800 text-sm mb-2">Interested in this property?</h3>
-              <p className="text-amber-700 text-xs mb-4">Create an account or log in to apply for a unit.</p>
-              <Link to="/register" className="block w-full text-center bg-amber-500 hover:bg-amber-400 text-white py-2.5 rounded-xl text-sm font-bold transition-all">
+            <div className="bg-secondary/10 border border-secondary/20 rounded-2xl p-5">
+              <h3 className="font-bold text-secondary text-sm mb-2">Interested in this property?</h3>
+              <p className="text-secondary/70 text-xs mb-4">Create an account or log in to apply for a unit.</p>
+              <Link to="/register" className="block w-full text-center bg-secondary hover:bg-secondary/90 text-white py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-secondary/20">
                 Get started
               </Link>
-              <Link to="/login" className="block w-full text-center text-amber-700 hover:text-amber-800 py-2 text-sm font-medium mt-2">
+              <Link to="/login" className="block w-full text-center text-secondary hover:text-secondary/80 py-2 text-sm font-medium mt-2">
                 Already have an account? Log in
               </Link>
             </div>

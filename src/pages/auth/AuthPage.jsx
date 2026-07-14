@@ -5,20 +5,20 @@ import { useLoginMutation, useRegisterMutation } from '../../features/auth/authA
 import { setCredentials } from '../../features/auth/authSlice'
 import { SmartRentInline } from '../../components/layout/SmartRentLogo'
 import toast from 'react-hot-toast'
-import { Building2, Home, ArrowLeft, Eye, EyeOff, Phone, Mail, User, Lock } from 'lucide-react'
+import { Building2, Home, ArrowLeft, Eye, EyeOff, Phone, Mail, User, Lock, ChevronRight } from 'lucide-react'
 
 const HERO_IMAGE = 'https://res.cloudinary.com/dpel6a1jf/image/upload/v1783193818/stacie-ong-iwgPK6SyM_c-unsplash_ydmzzu.jpg'
 
 function InputField({ label, icon: Icon, type = 'text', name, value, onChange, placeholder, required, minLength, rightElement }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+      <label className="block text-label-sm text-label-sm text-on-surface-variant font-medium mb-1.5">
         {label}
       </label>
       <div className="relative">
         {Icon && (
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-            <Icon size={15} />
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant">
+            <Icon size={17} />
           </div>
         )}
         <input
@@ -29,7 +29,7 @@ function InputField({ label, icon: Icon, type = 'text', name, value, onChange, p
           placeholder={placeholder}
           required={required}
           minLength={minLength}
-          className={`w-full bg-slate-50 border border-slate-200 rounded-xl py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all ${
+          className={`w-full bg-surface-container-low border border-outline-variant rounded-lg py-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all ${
             Icon ? 'pl-10' : 'pl-4'
           } ${rightElement ? 'pr-11' : 'pr-4'}`}
         />
@@ -77,13 +77,12 @@ function AuthPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      // 👇 FIX: Map confirm_password to password2 for backend
       const payload = mode === 'login'
         ? { email: form.email, password: form.password }
         : {
             email: form.email,
             password: form.password,
-            password2: form.confirm_password,  // 👈 Key fix
+            password2: form.confirm_password,
             first_name: form.first_name,
             last_name: form.last_name,
             phone_number: form.phone_number,
@@ -100,23 +99,23 @@ function AuthPage() {
   }
 
   const eyeButton = (show, toggle) => (
-    <button type="button" onClick={toggle} className="text-slate-400 hover:text-slate-600 transition-colors">
-      {show ? <EyeOff size={15} /> : <Eye size={15} />}
+    <button type="button" onClick={toggle} className="text-on-surface-variant hover:text-on-surface transition-colors">
+      {show ? <EyeOff size={17} /> : <Eye size={17} />}
     </button>
   )
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-background">
 
       {/* Left — form panel */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-white">
+      <div className="w-full lg:w-1/2 flex flex-col bg-surface-container-lowest">
 
         {/* Top bar */}
-        <div className="px-8 py-6 flex items-center justify-between border-b border-slate-100">
-          <Link to="/" className="flex items-center">
-            <SmartRentInline size={28} theme="light" />
+        <div className="px-8 py-6 flex items-center justify-between border-b border-outline-variant/30">
+          <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
+            <SmartRentInline size={32} theme="light" />
           </Link>
-          <Link to="/" className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors">
+          <Link to="/" className="flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface text-sm font-medium transition-colors">
             <ArrowLeft size={15} />
             Back to home
           </Link>
@@ -128,10 +127,10 @@ function AuthPage() {
 
             {/* Heading */}
             <div className="mb-8">
-              <h1 className="text-3xl font-black text-slate-900 leading-tight">
+              <h1 className="text-display-lg text-display-lg text-primary leading-tight tracking-tight">
                 {mode === 'login' ? 'Welcome back' : 'Create your account'}
               </h1>
-              <p className="text-slate-500 text-sm mt-2">
+              <p className="text-body-md text-body-md text-on-surface-variant mt-2">
                 {mode === 'login'
                   ? 'Log in to your SmartRent account to continue'
                   : 'Get started with SmartRent — free to sign up'}
@@ -139,16 +138,16 @@ function AuthPage() {
             </div>
 
             {/* Mode toggle */}
-            <div className="flex bg-slate-100 rounded-2xl p-1 mb-8">
+            <div className="flex bg-surface-container rounded-xl p-1 mb-8">
               {[['login', 'Log in'], ['register', 'Sign up']].map(([m, label]) => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     mode === m
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-white text-on-surface shadow-sm'
+                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
                   }`}
                 >
                   {label}
@@ -156,13 +155,13 @@ function AuthPage() {
               ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
 
               {mode === 'register' && (
                 <>
                   {/* Role selector */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                    <label className="block text-label-sm text-label-sm text-on-surface-variant font-medium mb-2">
                       I am a
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -174,24 +173,24 @@ function AuthPage() {
                           key={role}
                           type="button"
                           onClick={() => setForm({ ...form, role })}
-                          className={`relative p-4 rounded-2xl border-2 text-left transition-all ${
+                          className={`relative p-4 rounded-lg border-2 text-left transition-all ${
                             form.role === role
-                              ? 'border-amber-500 bg-amber-50'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-secondary bg-secondary/5'
+                              : 'border-outline-variant hover:border-outline bg-surface-container-lowest'
                           }`}
                         >
                           <Icon
                             size={20}
-                            className={form.role === role ? 'text-amber-600' : 'text-slate-400'}
+                            className={form.role === role ? 'text-secondary' : 'text-on-surface-variant'}
                           />
-                          <p className={`font-bold text-sm mt-2 ${form.role === role ? 'text-amber-800' : 'text-slate-700'}`}>
+                          <p className={`font-bold text-sm mt-2 ${form.role === role ? 'text-secondary' : 'text-on-surface'}`}>
                             {label}
                           </p>
-                          <p className={`text-xs mt-0.5 ${form.role === role ? 'text-amber-600' : 'text-slate-400'}`}>
+                          <p className={`text-xs mt-0.5 ${form.role === role ? 'text-secondary/70' : 'text-on-surface-variant'}`}>
                             {desc}
                           </p>
                           {form.role === role && (
-                            <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center">
+                            <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
                               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                               </svg>
@@ -203,8 +202,8 @@ function AuthPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <InputField label="First name" icon={User} name="first_name" value={form.first_name} onChange={handleChange} required />
-                    <InputField label="Last name" icon={User} name="last_name" value={form.last_name} onChange={handleChange} required />
+                    <InputField label="First name" icon={User} name="first_name" value={form.first_name} onChange={handleChange} required placeholder="John" />
+                    <InputField label="Last name" icon={User} name="last_name" value={form.last_name} onChange={handleChange} required placeholder="Doe" />
                   </div>
 
                   <InputField
@@ -238,6 +237,7 @@ function AuthPage() {
                 onChange={handleChange}
                 required
                 minLength={8}
+                placeholder="••••••••"
                 rightElement={eyeButton(showPassword, () => setShowPassword(!showPassword))}
               />
 
@@ -251,6 +251,7 @@ function AuthPage() {
                   onChange={handleChange}
                   required
                   minLength={8}
+                  placeholder="••••••••"
                   rightElement={eyeButton(showConfirm, () => setShowConfirm(!showConfirm))}
                 />
               )}
@@ -258,7 +259,7 @@ function AuthPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3.5 rounded-2xl font-bold text-sm transition-all disabled:opacity-50 shadow-lg shadow-slate-900/20 hover:shadow-slate-900/30 hover:-translate-y-0.5 active:translate-y-0 mt-2"
+                className="w-full bg-secondary hover:bg-secondary/90 text-white py-3.5 rounded-lg font-bold text-sm transition-all disabled:opacity-50 shadow-lg shadow-secondary/20 hover:shadow-secondary/30 hover:-translate-y-0.5 active:translate-y-0 mt-2"
               >
                 {isLoading
                   ? (mode === 'login' ? 'Logging in...' : 'Creating account...')
@@ -266,9 +267,9 @@ function AuthPage() {
               </button>
             </form>
 
-            <p className="text-center text-xs text-slate-400 mt-6">
+            <p className="text-center text-xs text-on-surface-variant/60 mt-6">
               By continuing you agree to SmartRent's{' '}
-              <span className="text-slate-600 underline cursor-pointer">Terms of Service</span>
+              <span className="text-secondary hover:underline cursor-pointer">Terms of Service</span>
             </p>
           </div>
         </div>
@@ -281,13 +282,14 @@ function AuthPage() {
           alt="SmartRent property"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-linear-to-br from-slate-900/70 via-slate-900/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/70 via-primary/40 to-transparent" />
 
-        {/* 👇 Clean hero section - no text overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-12">
-          {/* Empty - just the image with gradient overlay */}
-        </div>
+        {/* Clean hero section - no text overlay */}
+        <div className="absolute inset-0 flex flex-col justify-end p-12" />
       </div>
+     
+      
+
     </div>
   )
 }
