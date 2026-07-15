@@ -34,7 +34,7 @@ function TenantOverview() {
         <div className="bg-primary-container rounded-2xl p-6 flex items-center justify-between border border-white/5">
           <div>
             <p className="text-secondary text-xs font-bold uppercase tracking-widest mb-1">Active Lease</p>
-            <p className="text-white font-bold text-lg">{activeLease.property_name} — Unit {activeLease.unit_number}</p>
+            <p className="text-secondary font-bold text-lg">{activeLease.property_name} — Unit {activeLease.unit_number}</p>
             <p className="text-on-primary-container text-sm mt-1 flex items-center gap-2">
               <DollarSign size={14} className="text-secondary" />
               KES {Number(activeLease.rent_amount).toLocaleString()}/mo
