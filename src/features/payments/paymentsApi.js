@@ -4,7 +4,7 @@ export const paymentsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInvoices: builder.query({
       query: () => 'invoices/',
-      providesTags: ['Invoice'],
+      providesTags: ['Invoice', 'Payment'],
     }),
     createInvoice: builder.mutation({
       query: (data) => ({ url: 'invoices/', method: 'POST', body: data }),
@@ -12,11 +12,11 @@ export const paymentsApi = apiSlice.injectEndpoints({
     }),
     getPayments: builder.query({
       query: () => 'payments/',
-      providesTags: ['Payment'],
+      providesTags: ['Payment', 'Invoice'],
     }),
     stkPush: builder.mutation({
       query: (data) => ({ url: 'payments/mpesa/stk-push/', method: 'POST', body: data }),
-      invalidatesTags: ['Payment', 'Invoice'],
+      invalidatesTags: ['Payment', 'Invoice', 'Lease'],  
     }),
   }),
 })

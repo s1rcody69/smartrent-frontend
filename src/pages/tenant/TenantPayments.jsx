@@ -1,18 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGetInvoicesQuery, useGetPaymentsQuery } from '../../features/payments/paymentsApi'
 import { useStkPushMutation } from '../../features/payments/paymentsApi'
+import { useGetLeasesQuery } from '../../features/leases/leasesApi'
 import { CreditCard, CheckCircle, Clock, AlertCircle, X, Phone, DollarSign, Receipt, Calendar } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const inputCls = "w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
 
 function TenantPayments() {
-  const { data: invoicesData, isLoading } = useGetInvoicesQuery()
-  const { data: paymentsData } = useGetPaymentsQuery()
+  const { data: invoicesData, isLoading, refetch: refetchInvoices } = useGetInvoicesQuery()
+  const { data: paymentsData, refetch: refetchPayments } = useGetPaymentsQuery()
+  const { refetch: refetchLeases } = useGetLeasesQuery()
   const [stkPush, { isLoading: paying }] = useStkPushMutation()
   const [payingInvoice, setPayingInvoice] = useState(null)
   const [phone, setPhone] = useState('')
   const [activeTab, setActiveTab] = useState('invoices')
+  const [paymentPending, setPaymentPending] = useState(false)
 
   const invoices = invoicesData?.results || []
   const payments = paymentsData?.results || []
@@ -24,10 +27,38 @@ function TenantPayments() {
     try {
       await stkPush({ invoice_id: payingInvoice.id, phone_number: phone, amount: payingInvoice.amount }).unwrap()
       toast.success('Check your phone and enter your M-Pesa PIN')
-      setPayingInvoice(null)
-      setPhone('')
+      setPaymentPending(true)
+      
+      // Poll for updates every 3 seconds for up to 30 seconds
+      let attempts = 0
+      const maxAttempts = 10
+      const interval = setInterval(async () => {
+        attempts++
+        await refetchInvoices()
+        await refetchPayments()
+        await refetchLeases()
+        
+        // Check if invoice is now paid
+        const updatedData = await refetchInvoices().unwrap()
+        const updatedInvoices = updatedData?.results || []
+        const isPaid = updatedInvoices.find(i => i.id === payingInvoice.id)?.status === 'paid'
+        
+        if (isPaid) {
+          clearInterval(interval)
+          setPaymentPending(false)
+          toast.success('Payment confirmed! Invoice marked as paid.')
+          setPayingInvoice(null)
+          setPhone('')
+        } else if (attempts >= maxAttempts) {
+          clearInterval(interval)
+          setPaymentPending(false)
+          toast.info('Payment still processing. Check your payment history shortly.')
+        }
+      }, 3000)
+      
     } catch (err) {
       toast.error(err.data?.error || 'Payment failed. Try again.')
+      setPaymentPending(false)
     }
   }
 
@@ -50,6 +81,14 @@ function TenantPayments() {
         <h1 className="text-display-lg text-primary tracking-tight">Payments</h1>
         <p className="text-body-md text-on-surface-variant mt-2">Your invoices and payment history</p>
       </header>
+
+      {/* Payment pending status */}
+      {paymentPending && (
+        <div className="bg-warning-container border border-warning/20 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-5 h-5 rounded-full border-2 border-warning border-t-transparent animate-spin" />
+          <p className="text-warning font-medium text-sm">Processing your payment... Please wait.</p>
+        </div>
+      )}
 
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4">
@@ -112,7 +151,11 @@ function TenantPayments() {
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusColor(inv.status)}`}>{inv.status_display}</span>
                   </div>
                   {inv.status === 'pending' && (
-                    <button onClick={() => setPayingInvoice(inv)} className="bg-secondary hover:bg-secondary/90 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-lg shadow-secondary/20">
+                    <button 
+                      onClick={() => setPayingInvoice(inv)} 
+                      disabled={paymentPending}
+                      className="bg-secondary hover:bg-secondary/90 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-lg shadow-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                       Pay now
                     </button>
                   )}
@@ -171,8 +214,8 @@ function TenantPayments() {
                     <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required placeholder="0712345678" className={`${inputCls} pl-10`} />
                   </div>
                 </div>
-                <button type="submit" disabled={paying} className="w-full bg-secondary hover:bg-secondary/90 text-white py-3.5 rounded-lg font-bold text-sm disabled:opacity-50 transition-all shadow-lg shadow-secondary/20">
-                  {paying ? 'Sending STK Push...' : 'Send M-Pesa Request'}
+                <button type="submit" disabled={paying || paymentPending} className="w-full bg-secondary hover:bg-secondary/90 text-white py-3.5 rounded-lg font-bold text-sm disabled:opacity-50 transition-all shadow-lg shadow-secondary/20">
+                  {paying || paymentPending ? 'Processing...' : 'Send M-Pesa Request'}
                 </button>
                 <p className="text-on-surface-variant text-xs text-center">You will receive a PIN prompt on your phone. Enter your M-Pesa PIN to complete payment.</p>
               </form>
