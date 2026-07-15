@@ -30,7 +30,7 @@ function TenantLease() {
   }
 
   if (isLoading) return (
-    <div className="flex items-center justify-center min-h-100">
+    <div className="flex items-center justify-center min-h-[400px]">
       <div className="glass-panel ambient-shadow rounded-2xl p-8 w-full max-w-2xl animate-pulse border border-outline-variant/30">
         <div className="h-8 bg-surface-container rounded w-32 mb-4" />
         <div className="h-4 bg-surface-container rounded w-48 mb-6" />
@@ -42,9 +42,9 @@ function TenantLease() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
-        <h1 className="text-display-lg text-primary tracking-tight">My Lease</h1>
-        <p className="text-body-md text-on-surface-variant mt-2">Your current and past lease agreements</p>
+        <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
+        <h1 className="text-display-lg text-display-lg text-primary tracking-tight">My Lease</h1>
+        <p className="text-body-md text-body-md text-on-surface-variant mt-2">Your current and past lease agreements</p>
       </header>
 
       {!activeLease ? (
@@ -54,13 +54,13 @@ function TenantLease() {
         </div>
       ) : (
         <>
-          {/* Active lease card */}
-          <div className="bg-primary-container rounded-2xl p-7 border border-white/5">
+          {/* Active lease card - IMPROVED CONTRAST */}
+          <div className="bg-primary-container rounded-2xl p-7 border border-white/10 shadow-lg">
             <div className="flex items-start justify-between mb-5">
               <div>
                 <p className="text-secondary text-xs font-bold uppercase tracking-widest mb-1">Active Lease</p>
                 <h2 className="text-white font-bold text-xl">{activeLease.property_name}</h2>
-                <p className="text-on-primary-container text-sm mt-0.5">Unit {activeLease.unit_number}</p>
+                <p className="text-white/80 text-sm mt-0.5">Unit {activeLease.unit_number}</p>
               </div>
               <span className="bg-success/20 text-success text-xs font-bold px-3 py-1.5 rounded-full border border-success/30">Active</span>
             </div>
@@ -71,16 +71,16 @@ function TenantLease() {
                 ['Start Date', activeLease.start_date],
                 ['End Date', activeLease.end_date || 'Open-ended'],
               ].map(([label, value]) => (
-                <div key={label} className="bg-white/5 rounded-lg p-3">
-                  <p className="text-on-primary-container text-xs mb-1">{label}</p>
+                <div key={label} className="bg-white/10 rounded-lg p-3 border border-white/5">
+                  <p className="text-white/60 text-xs mb-1">{label}</p>
                   <p className="text-white font-bold text-sm">{value}</p>
                 </div>
               ))}
             </div>
             {activeLease.notes && (
-              <div className="mt-4 bg-white/5 rounded-lg p-3">
-                <p className="text-on-primary-container text-xs mb-1">Notes</p>
-                <p className="text-white/80 text-sm">{activeLease.notes}</p>
+              <div className="mt-4 bg-white/10 rounded-lg p-3 border border-white/5">
+                <p className="text-white/60 text-xs mb-1">Notes</p>
+                <p className="text-white/90 text-sm">{activeLease.notes}</p>
               </div>
             )}
           </div>
@@ -130,11 +130,11 @@ function TenantLease() {
                 </div>
                 <form onSubmit={handleTermSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">Reason for leaving</label>
+                    <label className="block text-label-sm text-label-sm text-on-surface-variant font-medium mb-1.5">Reason for leaving</label>
                     <textarea value={termForm.reason} onChange={e => setTermForm({ ...termForm, reason: e.target.value })} required rows={3} className={inputCls} placeholder="Please explain why you need to vacate early..." />
                   </div>
                   <div>
-                    <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">Requested vacate date</label>
+                    <label className="block text-label-sm text-label-sm text-on-surface-variant font-medium mb-1.5">Requested vacate date</label>
                     <input type="date" value={termForm.requested_vacate_date} onChange={e => setTermForm({ ...termForm, requested_vacate_date: e.target.value })} required className={inputCls} />
                   </div>
                   <div className="flex gap-3">
