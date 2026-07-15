@@ -30,7 +30,7 @@ function TenantLease() {
   }
 
   if (isLoading) return (
-    <div className="flex items-center justify-center min-h-[400px]">
+    <div className="flex items-center justify-center min-h-100">
       <div className="glass-panel ambient-shadow rounded-2xl p-8 w-full max-w-2xl animate-pulse border border-outline-variant/30">
         <div className="h-8 bg-surface-container rounded w-32 mb-4" />
         <div className="h-4 bg-surface-container rounded w-48 mb-6" />
@@ -42,9 +42,9 @@ function TenantLease() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-label-md text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
-        <h1 className="text-display-lg text-display-lg text-primary tracking-tight">My Lease</h1>
-        <p className="text-body-md text-body-md text-on-surface-variant mt-2">Your current and past lease agreements</p>
+        <p className="text-label-md text-secondary font-bold uppercase tracking-[0.2em] mb-1">Lease Management</p>
+        <h1 className="text-display-lg text-primary tracking-tight">My Lease</h1>
+        <p className="text-body-md text-on-surface-variant mt-2">Your current and past lease agreements</p>
       </header>
 
       {!activeLease ? (
@@ -130,11 +130,11 @@ function TenantLease() {
                 </div>
                 <form onSubmit={handleTermSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-label-sm text-label-sm text-on-surface-variant font-medium mb-1.5">Reason for leaving</label>
+                    <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">Reason for leaving</label>
                     <textarea value={termForm.reason} onChange={e => setTermForm({ ...termForm, reason: e.target.value })} required rows={3} className={inputCls} placeholder="Please explain why you need to vacate early..." />
                   </div>
                   <div>
-                    <label className="block text-label-sm text-label-sm text-on-surface-variant font-medium mb-1.5">Requested vacate date</label>
+                    <label className="block text-label-sm text-on-surface-variant font-medium mb-1.5">Requested vacate date</label>
                     <input type="date" value={termForm.requested_vacate_date} onChange={e => setTermForm({ ...termForm, requested_vacate_date: e.target.value })} required className={inputCls} />
                   </div>
                   <div className="flex gap-3">
